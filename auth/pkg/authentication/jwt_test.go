@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"auth/config"
-	"auth/internal/authentication"
+	"auth/pkg/authentication"
 
 	jwt_go "github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"

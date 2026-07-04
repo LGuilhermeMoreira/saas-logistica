@@ -20,6 +20,11 @@ O sistema tem como objetivo gerenciar entregas, rastreamento de motoristas e fat
     *   `CRIADA` → `EM_TRANSITO` → `CONCLUIDA` ou `FALHA`.
 *   **RF-04 – Consultar Entrega:** O sistema deve permitir consultar os detalhes de uma entrega.
     *   *Nota:* Quando a entrega estiver com status `EM_TRANSITO`, a consulta deverá apresentar também a última localização conhecida do motorista responsável (via integração com Telemetria).
+*  **RF-15 – Notificar Conclusão de Entrega por E-mail:** Quando uma entrega atingir o status CONCLUIDA, o sistema deve enviar automaticamente um e-mail de notificação ao cliente responsável pela entrega, contendo:
+
+* Identificador da entrega;
+* Endereço de origem e destino;
+* Data e hora de conclusão;
 
 ### Módulo de Telemetria
 *   **RF-05 – Registrar Localização do Motorista:** O sistema deve permitir registrar periodicamente a localização de um motorista contendo:

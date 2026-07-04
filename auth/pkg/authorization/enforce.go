@@ -6,8 +6,8 @@ import (
 	"auth/config"
 
 	"github.com/casbin/casbin/v2"
-	"github.com/jackc/pgx/v5/pgxpool"
-	pgxadapter "github.com/pckhoi/casbin-pgx-adapter/v3"
+	gormadapter "github.com/casbin/gorm-adapter/v3"
+	"gorm.io/gorm"
 )
 
 type Enforcer interface {
@@ -22,14 +22,10 @@ type CasbinEnforcer struct {
 	cas *casbin.SyncedEnforcer
 }
 
-func NewEnforcer(env *config.Env, pool *pgxpool.Pool) (Enforcer, error) {
-	adapter, err := pgxadapter.NewAdapter(
-		env.PostgresURI(),
-		pgxadapter.WithConnectionPool(pool),
-		pgxadapter.WithDatabase(env.DATABASE_NAME),
-	)
+func NewEnforcer(env *config.Env, db *gorm.DB) (Enforcer, error) {
+	adapter, err := gormadapter.NewAdapterByDB(db)
 	if err != nil {
-		return nil, fmt.Errorf("casbin adapter: %w", err)
+		return nil, fmt.Errorf("casbin gorm adapter: %w", err)
 	}
 
 	enforcer, err := casbin.NewSyncedEnforcer("model.conf", adapter)
