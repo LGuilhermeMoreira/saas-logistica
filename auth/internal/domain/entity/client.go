@@ -2,6 +2,7 @@ package entity
 
 import (
 	"errors"
+	"fmt"
 	"net/mail"
 	"strings"
 
@@ -21,18 +22,21 @@ type Client struct {
 }
 
 func NewClient(name, email, password, roleID string) (*Client, error) {
+	name = strings.TrimSpace(name)
+	email = strings.TrimSpace(email)
+	password = strings.TrimSpace(password)
 
-	if strings.TrimSpace(name) == "" {
+	if name == "" {
 		return nil, errors.New("client must have a name")
 	}
 
 	_, mailErr := mail.ParseAddress(email)
 
-	if strings.TrimSpace(email) == "" || mailErr != nil {
+	if email == "" || mailErr != nil {
 		return nil, errors.New("email is invalid")
 	}
 
-	if strings.TrimSpace(password) == "" || len(password) < 6 {
+	if password == "" || len(password) < 6 {
 		return nil, errors.New("password does not meet the security requirements")
 	}
 
@@ -43,7 +47,7 @@ func NewClient(name, email, password, roleID string) (*Client, error) {
 
 	id, err := uuid.NewV7()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to generate role id: %w", err)
 	}
 
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -58,4 +62,17 @@ func NewClient(name, email, password, roleID string) (*Client, error) {
 		Password: string(hashPassword),
 		RoleID:   realRoleId,
 	}, nil
+}
+
+func (c Client) ToMap() map[string]any {
+	return map[string]any{
+		"id":    c.ID,
+		"name":  c.Name,
+		"email": c.Email,
+		// "password":   c.Password,
+		"role_id":    c.RoleID,
+		"created_at": c.CreatedAt,
+		"updated_at": c.UpdatedAt,
+		"deleted_at": c.DeletedAt,
+	}
 }
