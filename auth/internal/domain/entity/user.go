@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Client struct {
+type User struct {
 	gorm.Model
 	ID       uuid.UUID `gorm:"primaryKey"`
 	Name     string    `gorm:"not null"`
@@ -21,7 +21,7 @@ type Client struct {
 	Role     Role      `gorm:"foreignKey:RoleID"`
 }
 
-func NewClient(name, email, password, roleID string) (*Client, error) {
+func NewUser(name, email, password, roleID string) (*User, error) {
 	name = strings.TrimSpace(name)
 	email = strings.TrimSpace(email)
 	password = strings.TrimSpace(password)
@@ -55,7 +55,7 @@ func NewClient(name, email, password, roleID string) (*Client, error) {
 		return nil, err
 	}
 
-	return &Client{
+	return &User{
 		ID:       id,
 		Name:     name,
 		Email:    email,
@@ -64,7 +64,7 @@ func NewClient(name, email, password, roleID string) (*Client, error) {
 	}, nil
 }
 
-func (c Client) ToMap() map[string]any {
+func (c User) ToMap() map[string]any {
 	return map[string]any{
 		"id":    c.ID,
 		"name":  c.Name,

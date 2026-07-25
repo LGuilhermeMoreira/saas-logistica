@@ -1,6 +1,6 @@
 package input
 
-type CreateClientInput struct {
+type CreateUserInput struct {
 	Name     string
 	Email    string
 	Password string
@@ -12,6 +12,6 @@ type LoginInput struct {
 	Password string
 }
 
-type DeleteClientInput struct {
+type DeleteUserInput struct {
 	ID string
 }

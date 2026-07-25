@@ -3,7 +3,8 @@
 
 O sistema tem como objetivo gerenciar entregas, rastreamento de motoristas e faturamento de fretes através de uma arquitetura baseada em microsserviços.
 
-## Requisitos Funcionais### Módulo de Autenticação e Segurança
+## Requisitos Funcionais
+### Módulo de Autenticação e Segurança
 *   **RF-11 – Cadastro de Usuários:** O sistema deve permitir o cadastro de novos usuários, diferenciando perfis (ex: Administrador, Motorista, Cliente).
 *   **RF-12 – Autenticação de Usuários:** O sistema deve permitir que usuários realizem login utilizando e-mail e senha.
 *   **RF-13 – Geração de Token de Acesso:** Após o login bem-sucedido, o sistema deve emitir um token seguro (ex: JWT) para autenticar requisições subsequentes.

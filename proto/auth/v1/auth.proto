@@ -1,17 +1,73 @@
-syntax="proto3";
+syntax = "proto3";
 
-package proto;
-option go_package = "./pb"
+package auth.v1;
 
-message LoginRequest{
-    string email = 1;
-    string password = 2;
+option go_package = "proto/gen/auth/v1;authv1";
+
+// Login
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
 }
 
-message LoginResponse{
-    string token = 1;
+message LoginResponse {
+  string access_token = 1;
 }
 
-service auth{
-    rpc Login(LoginRequest) returns (LoginResponse){}
+// Criar usuario
+
+message CreateUserRequest{
+  string name = 1;
+  string email = 2;
+  string password = 3;
+  string role_id = 4;
 }
+
+message CreateUserResponse{
+  string name = 1;
+  string email = 2;
+  string id = 3;
+}
+
+// Deletar usuario
+
+message DeleteUserRequest{
+  string id = 1;
+}
+
+message DeleteUserResponse{
+  string msg = 1;
+}
+
+// Criar cargo
+
+message CreateRoleRequest{
+  string name = 1;
+  string description = 2;
+}
+
+message CreateRoleResponse{
+  string id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+// Deletar cargo
+
+message DeleteRoleRequest{
+  string id = 1;
+}
+
+message DeleteRoleResponse{
+  string msg = 1;
+}
+
+service AuthService {
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse);
+  rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse);
+}
+

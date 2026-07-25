@@ -1,10 +1,11 @@
-package application
+package usecase
 
 import (
 	"auth/internal/application/input"
 	"auth/internal/application/output"
 	"auth/internal/domain/contract"
 	"auth/internal/domain/entity"
+	"auth/pkg/authorization"
 	"context"
 )
 
@@ -16,11 +17,13 @@ type RoleUsecaseInterface interface {
 
 type RoleUsecase struct {
 	repository contract.RoleRepositoryInterface
+	casbin     authorization.PermissionEnforcer
 }
 
-func NewRoleUsecase(repo contract.RoleRepositoryInterface) RoleUsecaseInterface {
+func NewRoleUsecase(repo contract.RoleRepositoryInterface, casbin authorization.PermissionEnforcer) RoleUsecaseInterface {
 	return &RoleUsecase{
 		repository: repo,
+		casbin:     casbin,
 	}
 }
 

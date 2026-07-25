@@ -10,47 +10,47 @@ import (
 	"gorm.io/gorm"
 )
 
-type ClientRepository struct {
+type UserRepository struct {
 	db *gorm.DB
 }
 
-func NewClientRepository(db *gorm.DB) contract.ClientRepositoryInterface {
-	return &ClientRepository{
+func NewUserRepository(db *gorm.DB) contract.UserRepositoryInterface {
+	return &UserRepository{
 		db: db,
 	}
 }
 
-func (c *ClientRepository) Create(ctx context.Context, model *entity.Client) error {
+func (c *UserRepository) Create(ctx context.Context, model *entity.User) error {
 
 	// não gostei de utilizar generics, mesmo sabendo as vantagens
-	// 	return gorm.G[entity.Client](c.db).Create(ctx, model)
+	// 	return gorm.G[entity.User](c.db).Create(ctx, model)
 	err := c.db.WithContext(ctx).Create(model).Error
-	return fmt.Errorf("failed to persist client in database: %w", err)
+	return fmt.Errorf("failed to persist User in database: %w", err)
 }
 
-func (c *ClientRepository) Delete(ctx context.Context, model *entity.Client) error {
+func (c *UserRepository) Delete(ctx context.Context, model *entity.User) error {
 	err := c.db.WithContext(ctx).Delete(model).Error
 
-	return fmt.Errorf("failed to delete client in database: %w", err)
+	return fmt.Errorf("failed to delete User in database: %w", err)
 }
 
-func (c *ClientRepository) Login(ctx context.Context, email string) (*entity.Client, error) {
-	var client entity.Client
+func (c *UserRepository) Login(ctx context.Context, email string) (*entity.User, error) {
+	var User entity.User
 
-	err := c.db.WithContext(ctx).Where("email = ?", email).First(&client).Error
+	err := c.db.WithContext(ctx).Where("email = ?", email).First(&User).Error
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to find client by email: %w", err)
+		return nil, fmt.Errorf("failed to find User by email: %w", err)
 	}
 
-	return &client, nil
+	return &User, nil
 }
 
-func (c *ClientRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Client, error) {
-	var result entity.Client
+func (c *UserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.User, error) {
+	var result entity.User
 	err := c.db.WithContext(ctx).Where("id = ?", id).First(&result).Error
 	if err != nil {
-		return nil, fmt.Errorf("failed to find client by id: %w", err)
+		return nil, fmt.Errorf("failed to find User by id: %w", err)
 	}
 	return &result, nil
 }

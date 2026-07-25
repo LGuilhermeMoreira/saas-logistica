@@ -12,8 +12,16 @@ import (
 
 type Enforcer interface {
 	Enforce(subject, route, method string) (bool, error)
+	PermissionEnforcer
+	RoleAssigner
+}
+
+type PermissionEnforcer interface {
 	AddPermissionsToRole(roleID string, permissions []Permission) error
 	RemovePermissionsToRole(roleID string, permissions []Permission) error
+}
+
+type RoleAssigner interface {
 	RemoveRole(roleID string) error
 	AssignRoleToUser(userID, roleID string) error
 }

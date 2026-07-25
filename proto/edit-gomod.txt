@@ -1,0 +1,2 @@
+go mod edit -replace=proto=../proto
+go mod tidy
