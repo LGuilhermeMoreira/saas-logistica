@@ -1,0 +1,22 @@
+{
+    "roles": [
+        {
+            "name": "admin",
+            "permissions": [
+                {
+                    "action": "*",
+                    "path": "*"
+                }
+            ]
+        },
+        {
+            "name": "client",
+            "permissions": [
+                {
+                    "action": "GET",
+                    "path": "/billins/invoice"
+                }
+            ]
+        }
+    ]
+}

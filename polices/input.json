@@ -1,0 +1,9 @@
+{
+    "input": {
+        "user": {
+            "role": "client"
+        },
+        "method": "GET",
+        "path": "/billins/invoice"
+    }
+}

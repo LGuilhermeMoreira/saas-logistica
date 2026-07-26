@@ -69,11 +69,6 @@ Cada serviço é responsável por seu próprio domínio de negócio.
 
 Cada microsserviço possui banco de dados isolado.
 
-**Não é permitido:**
-- Compartilhar tabelas;
-- Realizar JOIN entre bancos de serviços diferentes;
-- Acessar diretamente o banco de outro serviço.
-
 ---
 
 ## Comunicação entre Serviços
@@ -109,11 +104,6 @@ Consumido pelo Serviço de Faturamento para geração automática da fatura.
 ## Mensageria
 
 A integração assíncrona deve utilizar um broker de mensagens.
-
-**Possíveis tecnologias:**
-- RabbitMQ
-- Apache Kafka
-- NATS
 
 **Fluxo:**
 

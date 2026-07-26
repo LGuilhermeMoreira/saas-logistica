@@ -333,17 +333,70 @@ func (x *DeleteUserResponse) GetMsg() string {
 	return ""
 }
 
+type Permission struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Action        string                 `protobuf:"bytes,1,opt,name=action,proto3" json:"action,omitempty"`
+	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Permission) Reset() {
+	*x = Permission{}
+	mi := &file_auth_v1_auth_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Permission) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Permission) ProtoMessage() {}
+
+func (x *Permission) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_v1_auth_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Permission.ProtoReflect.Descriptor instead.
+func (*Permission) Descriptor() ([]byte, []int) {
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *Permission) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
+}
+
+func (x *Permission) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
 type CreateRoleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Permissions   []*Permission          `protobuf:"bytes,3,rep,name=permissions,proto3" json:"permissions,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateRoleRequest) Reset() {
 	*x = CreateRoleRequest{}
-	mi := &file_auth_v1_auth_proto_msgTypes[6]
+	mi := &file_auth_v1_auth_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -355,7 +408,7 @@ func (x *CreateRoleRequest) String() string {
 func (*CreateRoleRequest) ProtoMessage() {}
 
 func (x *CreateRoleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[6]
+	mi := &file_auth_v1_auth_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -368,7 +421,7 @@ func (x *CreateRoleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRoleRequest.ProtoReflect.Descriptor instead.
 func (*CreateRoleRequest) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{6}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *CreateRoleRequest) GetName() string {
@@ -385,18 +438,26 @@ func (x *CreateRoleRequest) GetDescription() string {
 	return ""
 }
 
+func (x *CreateRoleRequest) GetPermissions() []*Permission {
+	if x != nil {
+		return x.Permissions
+	}
+	return nil
+}
+
 type CreateRoleResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Permissions   []*Permission          `protobuf:"bytes,4,rep,name=permissions,proto3" json:"permissions,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateRoleResponse) Reset() {
 	*x = CreateRoleResponse{}
-	mi := &file_auth_v1_auth_proto_msgTypes[7]
+	mi := &file_auth_v1_auth_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -408,7 +469,7 @@ func (x *CreateRoleResponse) String() string {
 func (*CreateRoleResponse) ProtoMessage() {}
 
 func (x *CreateRoleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[7]
+	mi := &file_auth_v1_auth_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -421,7 +482,7 @@ func (x *CreateRoleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRoleResponse.ProtoReflect.Descriptor instead.
 func (*CreateRoleResponse) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{7}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CreateRoleResponse) GetId() string {
@@ -445,6 +506,13 @@ func (x *CreateRoleResponse) GetDescription() string {
 	return ""
 }
 
+func (x *CreateRoleResponse) GetPermissions() []*Permission {
+	if x != nil {
+		return x.Permissions
+	}
+	return nil
+}
+
 type DeleteRoleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -454,7 +522,7 @@ type DeleteRoleRequest struct {
 
 func (x *DeleteRoleRequest) Reset() {
 	*x = DeleteRoleRequest{}
-	mi := &file_auth_v1_auth_proto_msgTypes[8]
+	mi := &file_auth_v1_auth_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -466,7 +534,7 @@ func (x *DeleteRoleRequest) String() string {
 func (*DeleteRoleRequest) ProtoMessage() {}
 
 func (x *DeleteRoleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[8]
+	mi := &file_auth_v1_auth_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -479,7 +547,7 @@ func (x *DeleteRoleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRoleRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRoleRequest) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{8}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DeleteRoleRequest) GetId() string {
@@ -498,7 +566,7 @@ type DeleteRoleResponse struct {
 
 func (x *DeleteRoleResponse) Reset() {
 	*x = DeleteRoleResponse{}
-	mi := &file_auth_v1_auth_proto_msgTypes[9]
+	mi := &file_auth_v1_auth_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -510,7 +578,7 @@ func (x *DeleteRoleResponse) String() string {
 func (*DeleteRoleResponse) ProtoMessage() {}
 
 func (x *DeleteRoleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[9]
+	mi := &file_auth_v1_auth_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -523,7 +591,7 @@ func (x *DeleteRoleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRoleResponse.ProtoReflect.Descriptor instead.
 func (*DeleteRoleResponse) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{9}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteRoleResponse) GetMsg() string {
@@ -555,14 +623,20 @@ const file_auth_v1_auth_proto_rawDesc = "" +
 	"\x11DeleteUserRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"&\n" +
 	"\x12DeleteUserResponse\x12\x10\n" +
-	"\x03msg\x18\x01 \x01(\tR\x03msg\"I\n" +
+	"\x03msg\x18\x01 \x01(\tR\x03msg\"8\n" +
+	"\n" +
+	"Permission\x12\x16\n" +
+	"\x06action\x18\x01 \x01(\tR\x06action\x12\x12\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\"\x80\x01\n" +
 	"\x11CreateRoleRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\"Z\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x125\n" +
+	"\vpermissions\x18\x03 \x03(\v2\x13.auth.v1.PermissionR\vpermissions\"\x91\x01\n" +
 	"\x12CreateRoleResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\"#\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x125\n" +
+	"\vpermissions\x18\x04 \x03(\v2\x13.auth.v1.PermissionR\vpermissions\"#\n" +
 	"\x11DeleteRoleRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"&\n" +
 	"\x12DeleteRoleResponse\x12\x10\n" +
@@ -590,7 +664,7 @@ func file_auth_v1_auth_proto_rawDescGZIP() []byte {
 	return file_auth_v1_auth_proto_rawDescData
 }
 
-var file_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_auth_v1_auth_proto_goTypes = []any{
 	(*LoginRequest)(nil),       // 0: auth.v1.LoginRequest
 	(*LoginResponse)(nil),      // 1: auth.v1.LoginResponse
@@ -598,27 +672,30 @@ var file_auth_v1_auth_proto_goTypes = []any{
 	(*CreateUserResponse)(nil), // 3: auth.v1.CreateUserResponse
 	(*DeleteUserRequest)(nil),  // 4: auth.v1.DeleteUserRequest
 	(*DeleteUserResponse)(nil), // 5: auth.v1.DeleteUserResponse
-	(*CreateRoleRequest)(nil),  // 6: auth.v1.CreateRoleRequest
-	(*CreateRoleResponse)(nil), // 7: auth.v1.CreateRoleResponse
-	(*DeleteRoleRequest)(nil),  // 8: auth.v1.DeleteRoleRequest
-	(*DeleteRoleResponse)(nil), // 9: auth.v1.DeleteRoleResponse
+	(*Permission)(nil),         // 6: auth.v1.Permission
+	(*CreateRoleRequest)(nil),  // 7: auth.v1.CreateRoleRequest
+	(*CreateRoleResponse)(nil), // 8: auth.v1.CreateRoleResponse
+	(*DeleteRoleRequest)(nil),  // 9: auth.v1.DeleteRoleRequest
+	(*DeleteRoleResponse)(nil), // 10: auth.v1.DeleteRoleResponse
 }
 var file_auth_v1_auth_proto_depIdxs = []int32{
-	0, // 0: auth.v1.AuthService.Login:input_type -> auth.v1.LoginRequest
-	2, // 1: auth.v1.AuthService.CreateUser:input_type -> auth.v1.CreateUserRequest
-	4, // 2: auth.v1.AuthService.DeleteUser:input_type -> auth.v1.DeleteUserRequest
-	6, // 3: auth.v1.AuthService.CreateRole:input_type -> auth.v1.CreateRoleRequest
-	8, // 4: auth.v1.AuthService.DeleteRole:input_type -> auth.v1.DeleteRoleRequest
-	1, // 5: auth.v1.AuthService.Login:output_type -> auth.v1.LoginResponse
-	3, // 6: auth.v1.AuthService.CreateUser:output_type -> auth.v1.CreateUserResponse
-	5, // 7: auth.v1.AuthService.DeleteUser:output_type -> auth.v1.DeleteUserResponse
-	7, // 8: auth.v1.AuthService.CreateRole:output_type -> auth.v1.CreateRoleResponse
-	9, // 9: auth.v1.AuthService.DeleteRole:output_type -> auth.v1.DeleteRoleResponse
-	5, // [5:10] is the sub-list for method output_type
-	0, // [0:5] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	6,  // 0: auth.v1.CreateRoleRequest.permissions:type_name -> auth.v1.Permission
+	6,  // 1: auth.v1.CreateRoleResponse.permissions:type_name -> auth.v1.Permission
+	0,  // 2: auth.v1.AuthService.Login:input_type -> auth.v1.LoginRequest
+	2,  // 3: auth.v1.AuthService.CreateUser:input_type -> auth.v1.CreateUserRequest
+	4,  // 4: auth.v1.AuthService.DeleteUser:input_type -> auth.v1.DeleteUserRequest
+	7,  // 5: auth.v1.AuthService.CreateRole:input_type -> auth.v1.CreateRoleRequest
+	9,  // 6: auth.v1.AuthService.DeleteRole:input_type -> auth.v1.DeleteRoleRequest
+	1,  // 7: auth.v1.AuthService.Login:output_type -> auth.v1.LoginResponse
+	3,  // 8: auth.v1.AuthService.CreateUser:output_type -> auth.v1.CreateUserResponse
+	5,  // 9: auth.v1.AuthService.DeleteUser:output_type -> auth.v1.DeleteUserResponse
+	8,  // 10: auth.v1.AuthService.CreateRole:output_type -> auth.v1.CreateRoleResponse
+	10, // 11: auth.v1.AuthService.DeleteRole:output_type -> auth.v1.DeleteRoleResponse
+	7,  // [7:12] is the sub-list for method output_type
+	2,  // [2:7] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_auth_v1_auth_proto_init() }
@@ -632,7 +709,7 @@ func file_auth_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_v1_auth_proto_rawDesc), len(file_auth_v1_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
