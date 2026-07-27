@@ -19,13 +19,13 @@ type Env struct {
 	DATABASE_SSL_MODE string
 	DATABASE_PORT     string
 
-	BUCKET_NAME           string
-	URI                   string
-	ACCESS_KEY_ID         string
-	SECRECT_ACCESS_KEY    string
-	USE_SSL               bool
-	REGION                string
-	SIGNED_URL_EXPIRATION time.Duration
+	STORAGE_BUCKET_NAME           string
+	STORAGE_URI                   string
+	STORAGE_ACCESS_KEY_ID         string
+	STORAGE_SECRECT_ACCESS_KEY    string
+	STORAGE_USE_SSL               bool
+	STORAGE_REGION                string
+	STORAGE_SIGNED_URL_EXPIRATION time.Duration
 }
 
 func NewEnv() (*Env, error) {
@@ -34,12 +34,12 @@ func NewEnv() (*Env, error) {
 		return nil, fmt.Errorf("invalid JWT_TTL: %w", err)
 	}
 
-	signedURLExpiration, err := time.ParseDuration(os.Getenv("SIGNED_URL_EXPIRATION"))
+	signedURLExpiration, err := time.ParseDuration(os.Getenv("STORAGE_SIGNED_URL_EXPIRATION"))
 	if err != nil {
 		return nil, fmt.Errorf("invalid SIGNED_URL_EXPIRATION: %w", err)
 	}
 
-	useSSL, err := strconv.ParseBool(os.Getenv("USE_SSL"))
+	useSSL, err := strconv.ParseBool(os.Getenv("STORAGE_USE_SSL"))
 	if err != nil {
 		return nil, fmt.Errorf("invalid USE_SSL: %w", err)
 	}
@@ -56,13 +56,13 @@ func NewEnv() (*Env, error) {
 		DATABASE_SSL_MODE: os.Getenv("DATABASE_SSL_MODE"),
 		DATABASE_PORT:     os.Getenv("DATABASE_PORT"),
 
-		BUCKET_NAME:           os.Getenv("BUCKET_NAME"),
-		URI:                   os.Getenv("URI"),
-		ACCESS_KEY_ID:         os.Getenv("ACCESS_KEY_ID"),
-		SECRECT_ACCESS_KEY:    os.Getenv("SECRECT_ACCESS_KEY"),
-		USE_SSL:               useSSL,
-		REGION:                os.Getenv("REGION"),
-		SIGNED_URL_EXPIRATION: signedURLExpiration,
+		STORAGE_BUCKET_NAME:           os.Getenv("STORAGE_BUCKET_NAME"),
+		STORAGE_URI:                   os.Getenv("STORAGE_URI"),
+		STORAGE_ACCESS_KEY_ID:         os.Getenv("STORAGE_ACCESS_KEY_ID"),
+		STORAGE_SECRECT_ACCESS_KEY:    os.Getenv("STORAGE_SECRECT_ACCESS_KEY"),
+		STORAGE_USE_SSL:               useSSL,
+		STORAGE_REGION:                os.Getenv("STORAGE_REGION"),
+		STORAGE_SIGNED_URL_EXPIRATION: signedURLExpiration,
 	}, nil
 }
 

@@ -27,7 +27,18 @@ func NewRoleUsecase(repo contract.RoleRepositoryInterface) RoleUsecaseInterface 
 }
 
 func (r *RoleUsecase) Create(ctx context.Context, dto input.CreateRoleInput) (*output.RoleOutput, error) {
-	role, err := entity.NewRole(dto.Name, dto.Descritpion)
+	var perms []entity.Permission
+
+	for _, v := range dto.Permissions {
+		perm, err := entity.NewPermission(v.Action, v.Path)
+		if err != nil {
+			return nil, err
+		}
+
+		perms = append(perms, *perm)
+	}
+
+	role, err := entity.NewRole(dto.Name, dto.Description, perms)
 	if err != nil {
 		return nil, err
 	}

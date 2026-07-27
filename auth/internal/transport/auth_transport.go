@@ -70,7 +70,7 @@ func (u *AuthTransport) DeleteUser(ctx context.Context, req *authv1.DeleteUserRe
 }
 
 func (u *AuthTransport) CreateRole(ctx context.Context, req *authv1.CreateRoleRequest) (*authv1.CreateRoleResponse, error) {
-	result, err := u.ruc.Create(ctx, input.CreateRoleInput{Name: req.Name, Descritpion: req.Description})
+	result, err := u.ruc.Create(ctx, input.CreateRoleInput{Name: req.Name, Description: req.Description})
 	if err != nil {
 		return nil, err
 	}

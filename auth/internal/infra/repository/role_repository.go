@@ -36,3 +36,14 @@ func (r *RoleRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Ro
 
 	return &result, nil
 }
+
+func (r *RoleRepository) FindAll(ctx context.Context) ([]entity.Role, error) {
+	var result []entity.Role
+
+	err := r.db.Find(&result).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
