@@ -1,0 +1,16 @@
+services:
+  s3_minio:
+    url: http://minio:9000 
+    credentials:
+      s3_signing:
+        aws_access_key_id: minioadmin
+        aws_secret_access_key: minioadmin
+        aws_region: us-east-1
+
+bundles:
+  authz_bundle:
+    service: s3_minio
+    resource: seu-bucket-de-politicas/bundle.tar.gz 
+    polling:
+      min_delay_seconds: 15
+      max_delay_seconds: 30

@@ -12,6 +12,8 @@ type Env struct {
 	JWT_SECRET string
 	JWT_TTL    time.Duration
 
+	OPA_ADDRESS string
+
 	DATABASE_NAME     string
 	DATABASE_USER     string
 	DATABASE_PASSWORD string
@@ -44,10 +46,17 @@ func NewEnv() (*Env, error) {
 		return nil, fmt.Errorf("invalid USE_SSL: %w", err)
 	}
 
+	opaAddress := os.Getenv("OPA_ADDRESS")
+	if opaAddress == "" {
+		opaAddress = "http://localhost:8181/v1/data/authz/allow"
+	}
+
 	return &Env{
 		PORT:       os.Getenv("PORT"),
 		JWT_SECRET: os.Getenv("JWT_SECRET"),
 		JWT_TTL:    jwtTTL,
+
+		OPA_ADDRESS: opaAddress,
 
 		DATABASE_NAME:     os.Getenv("DATABASE_NAME"),
 		DATABASE_USER:     os.Getenv("DATABASE_USER"),
