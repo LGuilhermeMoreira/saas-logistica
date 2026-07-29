@@ -5,8 +5,9 @@ import (
 	"auth/internal/application/output"
 	"auth/internal/domain/contract"
 	"auth/internal/domain/entity"
-	"auth/pkg/authorization"
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type RoleUsecaseInterface interface {
@@ -17,18 +18,27 @@ type RoleUsecaseInterface interface {
 
 type RoleUsecase struct {
 	repository contract.RoleRepositoryInterface
-	casbin     authorization.PermissionEnforcer
 }
 
-func NewRoleUsecase(repo contract.RoleRepositoryInterface, casbin authorization.PermissionEnforcer) RoleUsecaseInterface {
+func NewRoleUsecase(repo contract.RoleRepositoryInterface) RoleUsecaseInterface {
 	return &RoleUsecase{
 		repository: repo,
-		casbin:     casbin,
 	}
 }
 
 func (r *RoleUsecase) Create(ctx context.Context, dto input.CreateRoleInput) (*output.RoleOutput, error) {
-	role, err := entity.NewRole(dto.Name, dto.Descritpion)
+	var perms []entity.Permission
+
+	for _, v := range dto.Permissions {
+		perm, err := entity.NewPermission(v.Action, v.Path)
+		if err != nil {
+			return nil, err
+		}
+
+		perms = append(perms, *perm)
+	}
+
+	role, err := entity.NewRole(dto.Name, dto.Description, perms)
 	if err != nil {
 		return nil, err
 	}
@@ -46,4 +56,17 @@ func (r *RoleUsecase) Create(ctx context.Context, dto input.CreateRoleInput) (*o
 
 }
 
-func (r *RoleUsecase) Delete(ctx context.Context, dto input.DeleteRoleInput) error
+func (r *RoleUsecase) Delete(ctx context.Context, dto input.DeleteRoleInput) error {
+	id, err := uuid.Parse(dto.ID)
+	if err != nil {
+		return err
+	}
+
+	result, err := r.repository.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	return r.repository.Delete(ctx, result)
+
+}

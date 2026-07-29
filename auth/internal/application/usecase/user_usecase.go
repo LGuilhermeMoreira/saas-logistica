@@ -6,7 +6,7 @@ import (
 	"auth/internal/domain/contract"
 	"auth/internal/domain/entity"
 	"auth/pkg/authentication"
-	"auth/pkg/authorization"
+
 	"context"
 	"errors"
 	"strings"
@@ -24,11 +24,10 @@ type UserUsecaseInterface interface {
 type UserUsecase struct {
 	repository contract.UserRepositoryInterface
 	jwt        authentication.JWTInterface
-	casbin     authorization.RoleAssigner
 }
 
-func NewUserUsecase(repo contract.UserRepositoryInterface, jwt authentication.JWTInterface, casbin authorization.RoleAssigner) UserUsecaseInterface {
-	return &UserUsecase{repository: repo, jwt: jwt, casbin: casbin}
+func NewUserUsecase(repo contract.UserRepositoryInterface, jwt authentication.JWTInterface) UserUsecaseInterface {
+	return &UserUsecase{repository: repo, jwt: jwt}
 }
 func (c *UserUsecase) Create(ctx context.Context, dto input.CreateUserInput) (*output.CreateUserOutput, error) {
 	result, err := entity.NewUser(dto.Name, dto.Email, dto.Password, dto.RoleID)
@@ -37,11 +36,6 @@ func (c *UserUsecase) Create(ctx context.Context, dto input.CreateUserInput) (*o
 	}
 
 	err = c.repository.Create(ctx, result)
-	if err != nil {
-		return nil, err
-	}
-
-	err = c.casbin.AssignRoleToUser(result.ID.String(), result.RoleID.String())
 	if err != nil {
 		return nil, err
 	}
