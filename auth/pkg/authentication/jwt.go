@@ -12,10 +12,19 @@ import (
 type JWTToken string
 
 type JWTInterface interface {
+	TokenGenerator
+	TokenValidator
+}
+
+type TokenGenerator interface {
 	GenerateToken(data any) (JWTToken, error)
 	GenerateShortToken(data any) (JWTToken, error)
 }
 
+type TokenValidator interface {
+	Validate(tokenStr string) error
+	ExtractClaims(tokenStr string) (jwt_go.MapClaims, error)
+}
 type JWT struct {
 	timeToLive time.Duration
 	secret     string

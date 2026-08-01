@@ -18,7 +18,7 @@ type User struct {
 	Email    string    `gorm:"uniqueIndex"`
 	Password string    `gorm:"not null"`
 	RoleID   uuid.UUID `gorm:"not null"`
-	Role     Role      `gorm:"foreignKey:RoleID"`
+	Role     Role      `gorm:"foreignKey:RoleID;references:ID"`
 }
 
 func NewUser(name, email, password, roleID string) (*User, error) {
@@ -71,6 +71,7 @@ func (c User) ToMap() map[string]any {
 		"email": c.Email,
 		// "password":   c.Password,
 		"role_id":    c.RoleID,
+		"role_name":  c.Role.Name,
 		"created_at": c.CreatedAt,
 		"updated_at": c.UpdatedAt,
 		"deleted_at": c.DeletedAt,

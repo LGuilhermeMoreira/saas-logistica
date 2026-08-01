@@ -18,11 +18,13 @@ type RoleUsecaseInterface interface {
 
 type RoleUsecase struct {
 	repository contract.RoleRepositoryInterface
+	opaService contract.OPASyncServiceInterface
 }
 
-func NewRoleUsecase(repo contract.RoleRepositoryInterface) RoleUsecaseInterface {
+func NewRoleUsecase(repo contract.RoleRepositoryInterface, opa contract.OPASyncServiceInterface) RoleUsecaseInterface {
 	return &RoleUsecase{
 		repository: repo,
+		opaService: opa,
 	}
 }
 
@@ -44,6 +46,11 @@ func (r *RoleUsecase) Create(ctx context.Context, dto input.CreateRoleInput) (*o
 	}
 
 	err = r.repository.Create(ctx, role)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.opaService.SyncPolicies(ctx)
 	if err != nil {
 		return nil, err
 	}

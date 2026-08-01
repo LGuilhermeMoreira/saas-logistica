@@ -13,34 +13,34 @@ import (
 var ErrForbidden = errors.New("acesso negado pelas políticas de autorização")
 
 type OPAInterface interface {
-	Validate(data any) error
+	Validate(data OPAInput) error
 }
 
 type OPA struct {
 	address string
 }
 
-func NewOPA(env *config.Env) *OPA {
+func NewOPA(env *config.Env) OPAInterface {
 	return &OPA{
 		address: env.OPA_ADDRESS,
 	}
 }
 
-func (o *OPA) Validate(data any) error {
+func (o *OPA) Validate(data OPAInput) error {
 	client := &http.Client{
-		Timeout: time.Second * 2,
+		Timeout: 2 * time.Second,
 	}
 
 	payload := map[string]any{
 		"input": data,
 	}
 
-	jsonBody, err := json.Marshal(payload)
+	body, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, o.address, bytes.NewBuffer(jsonBody))
+	req, err := http.NewRequest(http.MethodPost, o.address, bytes.NewReader(body))
 	if err != nil {
 		return err
 	}
@@ -54,20 +54,34 @@ func (o *OPA) Validate(data any) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("opa retornou status inesperado: %d", resp.StatusCode)
+		return fmt.Errorf("opa returned unexpected status: %d", resp.StatusCode)
 	}
 
-	var opaResponse struct {
-		Result bool `json:"result"`
+	var response struct {
+		Result struct {
+			Allow bool `json:"allow"`
+		} `json:"result"`
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&opaResponse); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return err
 	}
 
-	if !opaResponse.Result {
+	if !response.Result.Allow {
 		return ErrForbidden
 	}
 
 	return nil
+}
+
+type OPAInput struct {
+	User struct {
+		Role string `json:"role"`
+	} `json:"user"`
+	Action string `json:"method"`
+	Path   string `json:"path"`
+}
+
+func (o *OPAInput) ToJSON() ([]byte, error) {
+	return json.Marshal(o)
 }

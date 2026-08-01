@@ -12,12 +12,12 @@ import (
 
 type OPASyncService struct {
 	repo    contract.RoleRepositoryInterface
-	storage contract.StorageService
+	storage contract.StorageServiceInterface
 }
 
 func NewOPASyncService(
 	repo contract.RoleRepositoryInterface,
-	storage contract.StorageService,
+	storage contract.StorageServiceInterface,
 ) contract.OPASyncServiceInterface {
 	return &OPASyncService{
 		repo:    repo,

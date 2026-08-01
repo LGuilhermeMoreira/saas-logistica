@@ -4,8 +4,10 @@ package auth.v1;
 
 option go_package = "proto/gen/auth/v1;authv1";
 
-message Token {
+message AuthField {
     string token = 1;
+    string path = 2;
+    string action = 3;
 }
 
 // Login
@@ -25,7 +27,7 @@ string name = 1;
 string email = 2;
 string password = 3;
 string role_id = 4;
-Token token = 5;
+AuthField auth_field = 5;
 }
 
 message CreateUserResponse{
@@ -38,7 +40,7 @@ string id = 3;
 
 message DeleteUserRequest{
 string id = 1;
-Token token = 2;
+AuthField auth_field = 2;
 }
 
 message DeleteUserResponse{
@@ -56,7 +58,7 @@ message CreateRoleRequest{
 string name = 1;
 string description = 2;
 repeated Permission permissions = 3; 
-Token token = 4;
+AuthField auth_field = 4;
 }
 
 message CreateRoleResponse{
@@ -70,7 +72,7 @@ repeated Permission permissions = 4;
 
 message DeleteRoleRequest{
 string id = 1;
-Token token = 2;
+AuthField auth_field = 2;
 }
 
 message DeleteRoleResponse{

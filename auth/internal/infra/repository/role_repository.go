@@ -29,7 +29,7 @@ func (r *RoleRepository) Delete(ctx context.Context, model *entity.Role) error {
 func (r *RoleRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Role, error) {
 	var result entity.Role
 
-	err := r.db.WithContext(ctx).Where("id = ?", id).First(&result).Error
+	err := r.db.WithContext(ctx).Preload("Permissions").Where("id = ?", id).First(&result).Error
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (r *RoleRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Ro
 func (r *RoleRepository) FindAll(ctx context.Context) ([]entity.Role, error) {
 	var result []entity.Role
 
-	err := r.db.Find(&result).Error
+	err := r.db.WithContext(ctx).Preload("Permissions").Find(&result).Error
 	if err != nil {
 		return nil, err
 	}

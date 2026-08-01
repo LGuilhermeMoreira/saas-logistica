@@ -18,7 +18,7 @@ type StorageService struct {
 	signedUrlExpiration time.Duration
 }
 
-func NewStorageService(client *minio.Client, env *config.Env) contract.StorageService {
+func NewStorageService(client *minio.Client, env *config.Env) contract.StorageServiceInterface {
 	return &StorageService{
 		client:              client,
 		bucketName:          env.STORAGE_BUCKET_NAME,

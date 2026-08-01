@@ -21,27 +21,29 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Token struct {
+type AuthField struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
+	Action        string                 `protobuf:"bytes,3,opt,name=action,proto3" json:"action,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Token) Reset() {
-	*x = Token{}
+func (x *AuthField) Reset() {
+	*x = AuthField{}
 	mi := &file_auth_v1_auth_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Token) String() string {
+func (x *AuthField) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Token) ProtoMessage() {}
+func (*AuthField) ProtoMessage() {}
 
-func (x *Token) ProtoReflect() protoreflect.Message {
+func (x *AuthField) ProtoReflect() protoreflect.Message {
 	mi := &file_auth_v1_auth_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -53,14 +55,28 @@ func (x *Token) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Token.ProtoReflect.Descriptor instead.
-func (*Token) Descriptor() ([]byte, []int) {
+// Deprecated: Use AuthField.ProtoReflect.Descriptor instead.
+func (*AuthField) Descriptor() ([]byte, []int) {
 	return file_auth_v1_auth_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Token) GetToken() string {
+func (x *AuthField) GetToken() string {
 	if x != nil {
 		return x.Token
+	}
+	return ""
+}
+
+func (x *AuthField) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *AuthField) GetAction() string {
+	if x != nil {
+		return x.Action
 	}
 	return ""
 }
@@ -168,7 +184,7 @@ type CreateUserRequest struct {
 	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
 	RoleId        string                 `protobuf:"bytes,4,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
-	Token         *Token                 `protobuf:"bytes,5,opt,name=token,proto3" json:"token,omitempty"`
+	AuthField     *AuthField             `protobuf:"bytes,5,opt,name=auth_field,json=authField,proto3" json:"auth_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -231,9 +247,9 @@ func (x *CreateUserRequest) GetRoleId() string {
 	return ""
 }
 
-func (x *CreateUserRequest) GetToken() *Token {
+func (x *CreateUserRequest) GetAuthField() *AuthField {
 	if x != nil {
-		return x.Token
+		return x.AuthField
 	}
 	return nil
 }
@@ -301,7 +317,7 @@ func (x *CreateUserResponse) GetId() string {
 type DeleteUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Token         *Token                 `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	AuthField     *AuthField             `protobuf:"bytes,2,opt,name=auth_field,json=authField,proto3" json:"auth_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -343,9 +359,9 @@ func (x *DeleteUserRequest) GetId() string {
 	return ""
 }
 
-func (x *DeleteUserRequest) GetToken() *Token {
+func (x *DeleteUserRequest) GetAuthField() *AuthField {
 	if x != nil {
-		return x.Token
+		return x.AuthField
 	}
 	return nil
 }
@@ -451,7 +467,7 @@ type CreateRoleRequest struct {
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	Permissions   []*Permission          `protobuf:"bytes,3,rep,name=permissions,proto3" json:"permissions,omitempty"`
-	Token         *Token                 `protobuf:"bytes,4,opt,name=token,proto3" json:"token,omitempty"`
+	AuthField     *AuthField             `protobuf:"bytes,4,opt,name=auth_field,json=authField,proto3" json:"auth_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -507,9 +523,9 @@ func (x *CreateRoleRequest) GetPermissions() []*Permission {
 	return nil
 }
 
-func (x *CreateRoleRequest) GetToken() *Token {
+func (x *CreateRoleRequest) GetAuthField() *AuthField {
 	if x != nil {
-		return x.Token
+		return x.AuthField
 	}
 	return nil
 }
@@ -585,7 +601,7 @@ func (x *CreateRoleResponse) GetPermissions() []*Permission {
 type DeleteRoleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Token         *Token                 `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	AuthField     *AuthField             `protobuf:"bytes,2,opt,name=auth_field,json=authField,proto3" json:"auth_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -627,9 +643,9 @@ func (x *DeleteRoleRequest) GetId() string {
 	return ""
 }
 
-func (x *DeleteRoleRequest) GetToken() *Token {
+func (x *DeleteRoleRequest) GetAuthField() *AuthField {
 	if x != nil {
-		return x.Token
+		return x.AuthField
 	}
 	return nil
 }
@@ -682,46 +698,52 @@ var File_auth_v1_auth_proto protoreflect.FileDescriptor
 
 const file_auth_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\x12auth/v1/auth.proto\x12\aauth.v1\"\x1d\n" +
-	"\x05Token\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\"@\n" +
+	"\x12auth/v1/auth.proto\x12\aauth.v1\"M\n" +
+	"\tAuthField\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12\x12\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\x12\x16\n" +
+	"\x06action\x18\x03 \x01(\tR\x06action\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"2\n" +
 	"\rLoginResponse\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\"\x98\x01\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\"\xa5\x01\n" +
 	"\x11CreateUserRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpassword\x12\x17\n" +
-	"\arole_id\x18\x04 \x01(\tR\x06roleId\x12$\n" +
-	"\x05token\x18\x05 \x01(\v2\x0e.auth.v1.TokenR\x05token\"N\n" +
+	"\arole_id\x18\x04 \x01(\tR\x06roleId\x121\n" +
+	"\n" +
+	"auth_field\x18\x05 \x01(\v2\x12.auth.v1.AuthFieldR\tauthField\"N\n" +
 	"\x12CreateUserResponse\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x0e\n" +
-	"\x02id\x18\x03 \x01(\tR\x02id\"I\n" +
+	"\x02id\x18\x03 \x01(\tR\x02id\"V\n" +
 	"\x11DeleteUserRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12$\n" +
-	"\x05token\x18\x02 \x01(\v2\x0e.auth.v1.TokenR\x05token\"&\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x121\n" +
+	"\n" +
+	"auth_field\x18\x02 \x01(\v2\x12.auth.v1.AuthFieldR\tauthField\"&\n" +
 	"\x12DeleteUserResponse\x12\x10\n" +
 	"\x03msg\x18\x01 \x01(\tR\x03msg\"8\n" +
 	"\n" +
 	"Permission\x12\x16\n" +
 	"\x06action\x18\x01 \x01(\tR\x06action\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path\"\xa6\x01\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\"\xb3\x01\n" +
 	"\x11CreateRoleRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x125\n" +
-	"\vpermissions\x18\x03 \x03(\v2\x13.auth.v1.PermissionR\vpermissions\x12$\n" +
-	"\x05token\x18\x04 \x01(\v2\x0e.auth.v1.TokenR\x05token\"\x91\x01\n" +
+	"\vpermissions\x18\x03 \x03(\v2\x13.auth.v1.PermissionR\vpermissions\x121\n" +
+	"\n" +
+	"auth_field\x18\x04 \x01(\v2\x12.auth.v1.AuthFieldR\tauthField\"\x91\x01\n" +
 	"\x12CreateRoleResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x125\n" +
-	"\vpermissions\x18\x04 \x03(\v2\x13.auth.v1.PermissionR\vpermissions\"I\n" +
+	"\vpermissions\x18\x04 \x03(\v2\x13.auth.v1.PermissionR\vpermissions\"V\n" +
 	"\x11DeleteRoleRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12$\n" +
-	"\x05token\x18\x02 \x01(\v2\x0e.auth.v1.TokenR\x05token\"&\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x121\n" +
+	"\n" +
+	"auth_field\x18\x02 \x01(\v2\x12.auth.v1.AuthFieldR\tauthField\"&\n" +
 	"\x12DeleteRoleResponse\x12\x10\n" +
 	"\x03msg\x18\x01 \x01(\tR\x03msg2\xe1\x02\n" +
 	"\vAuthService\x126\n" +
@@ -749,7 +771,7 @@ func file_auth_v1_auth_proto_rawDescGZIP() []byte {
 
 var file_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_auth_v1_auth_proto_goTypes = []any{
-	(*Token)(nil),              // 0: auth.v1.Token
+	(*AuthField)(nil),          // 0: auth.v1.AuthField
 	(*LoginRequest)(nil),       // 1: auth.v1.LoginRequest
 	(*LoginResponse)(nil),      // 2: auth.v1.LoginResponse
 	(*CreateUserRequest)(nil),  // 3: auth.v1.CreateUserRequest
@@ -763,12 +785,12 @@ var file_auth_v1_auth_proto_goTypes = []any{
 	(*DeleteRoleResponse)(nil), // 11: auth.v1.DeleteRoleResponse
 }
 var file_auth_v1_auth_proto_depIdxs = []int32{
-	0,  // 0: auth.v1.CreateUserRequest.token:type_name -> auth.v1.Token
-	0,  // 1: auth.v1.DeleteUserRequest.token:type_name -> auth.v1.Token
+	0,  // 0: auth.v1.CreateUserRequest.auth_field:type_name -> auth.v1.AuthField
+	0,  // 1: auth.v1.DeleteUserRequest.auth_field:type_name -> auth.v1.AuthField
 	7,  // 2: auth.v1.CreateRoleRequest.permissions:type_name -> auth.v1.Permission
-	0,  // 3: auth.v1.CreateRoleRequest.token:type_name -> auth.v1.Token
+	0,  // 3: auth.v1.CreateRoleRequest.auth_field:type_name -> auth.v1.AuthField
 	7,  // 4: auth.v1.CreateRoleResponse.permissions:type_name -> auth.v1.Permission
-	0,  // 5: auth.v1.DeleteRoleRequest.token:type_name -> auth.v1.Token
+	0,  // 5: auth.v1.DeleteRoleRequest.auth_field:type_name -> auth.v1.AuthField
 	1,  // 6: auth.v1.AuthService.Login:input_type -> auth.v1.LoginRequest
 	3,  // 7: auth.v1.AuthService.CreateUser:input_type -> auth.v1.CreateUserRequest
 	5,  // 8: auth.v1.AuthService.DeleteUser:input_type -> auth.v1.DeleteUserRequest

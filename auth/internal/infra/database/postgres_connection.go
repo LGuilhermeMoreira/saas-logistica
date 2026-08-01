@@ -9,14 +9,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetConnection(dsn string) (*gorm.DB, error) {
+func NewPostgresConnection(dsn string) (*gorm.DB, error) {
 	for i := 0; i < 5; i++ {
 		conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 		if err == nil {
 			sqlDB, err := conn.DB()
 			if err != nil {
-				log.Printf("Aviso: Falha ao configurar pool de conexões: %v", err)
+				log.Printf("Warning: Failed to configure connection pool: %v", err)
 				return conn, nil
 			}
 
@@ -28,9 +28,9 @@ func GetConnection(dsn string) (*gorm.DB, error) {
 			return conn, nil
 		}
 
-		log.Printf("Tentativa %d falhou. Retentando em 2 segundos...", i+1)
+		log.Printf("Attempt %d failed. Retrying in 2 seconds...", i+1)
 		time.Sleep(time.Second * 2)
 	}
 
-	return nil, errors.New("não foi possível conectar com o banco de dados após 5 tentativas")
+	return nil, errors.New("Unable to connect to the database after 5 attempts.")
 }

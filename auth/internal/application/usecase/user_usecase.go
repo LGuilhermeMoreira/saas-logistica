@@ -23,10 +23,10 @@ type UserUsecaseInterface interface {
 
 type UserUsecase struct {
 	repository contract.UserRepositoryInterface
-	jwt        authentication.JWTInterface
+	jwt        authentication.TokenGenerator
 }
 
-func NewUserUsecase(repo contract.UserRepositoryInterface, jwt authentication.JWTInterface) UserUsecaseInterface {
+func NewUserUsecase(repo contract.UserRepositoryInterface, jwt authentication.TokenGenerator) UserUsecaseInterface {
 	return &UserUsecase{repository: repo, jwt: jwt}
 }
 func (c *UserUsecase) Create(ctx context.Context, dto input.CreateUserInput) (*output.CreateUserOutput, error) {
