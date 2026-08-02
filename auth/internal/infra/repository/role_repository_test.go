@@ -55,7 +55,7 @@ func TestRoleRepository_FindByID(t *testing.T) {
 	err := db.Create(expectedRole).Error
 	require.NoError(t, err)
 
-	t.Run("Good luck finding something to do.", func(t *testing.T) {
+	t.Run("success finding existing role", func(t *testing.T) {
 		result, err := repo.FindByID(ctx, expectedRole.ID)
 		assert.NoError(t, err)
 		assert.NotNil(t, result)

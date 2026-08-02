@@ -42,7 +42,7 @@ func (c *UserRepository) Delete(ctx context.Context, model *entity.User) error {
 func (c *UserRepository) Login(ctx context.Context, email string) (*entity.User, error) {
 	var User entity.User
 
-	err := c.db.WithContext(ctx).Preload("Roles", nil).Where("email = ?", email).First(&User).Error
+	err := c.db.WithContext(ctx).Preload("Role", nil).Where("email = ?", email).First(&User).Error
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to find User by email: %w", err)

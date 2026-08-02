@@ -29,11 +29,6 @@ func setupMinioContainer(t *testing.T) (*minio.Client, *config.Env, func()) {
 		miniotc.WithPassword(secretKey),
 	)
 	require.NoError(t, err)
-	defer func() {
-		if err := minioContainer.Terminate(ctx); err != nil {
-			t.Fatalf("erro ao terminar container: %v", err)
-		}
-	}()
 
 	endpoint, err := minioContainer.ConnectionString(ctx)
 	require.NoError(t, err)

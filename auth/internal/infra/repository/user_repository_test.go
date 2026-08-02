@@ -87,12 +87,12 @@ func TestUserRepository_Login(t *testing.T) {
 	t.Run("success logging in and fetching roles", func(t *testing.T) {
 		result, err := repo.Login(ctx, "login@example.com")
 
-		assert.NoError(t, err)
-		assert.NotNil(t, result)
+		require.NoError(t, err)
+		require.NotNil(t, result)
 		assert.Equal(t, expectedUser.ID, result.ID)
 
-		// Verifies if Preload("Roles") worked
-		assert.NotNil(t, result.Role)
+		// Verifies if Preload("Role") worked
+		require.NotNil(t, result.Role)
 		assert.Equal(t, "Admin", result.Role.Name)
 	})
 
