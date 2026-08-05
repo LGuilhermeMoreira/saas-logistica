@@ -13,7 +13,6 @@ import (
 	"auth/internal/application/input"
 	"auth/internal/application/usecase"
 	"auth/internal/domain/entity"
-	"auth/pkg/authentication"
 )
 
 type MockUserRepository struct {
@@ -50,14 +49,14 @@ type MockTokenGenerator struct {
 	mock.Mock
 }
 
-func (m *MockTokenGenerator) GenerateToken(data any) (authentication.JWTToken, error) {
+func (m *MockTokenGenerator) GenerateToken(data any) (string, error) {
 	args := m.Called(data)
-	return args.Get(0).(authentication.JWTToken), args.Error(1)
+	return args.Get(0).(string), args.Error(1)
 }
 
-func (m *MockTokenGenerator) GenerateShortToken(data any) (authentication.JWTToken, error) {
+func (m *MockTokenGenerator) GenerateShortToken(data any) (string, error) {
 	args := m.Called(data)
-	return args.Get(0).(authentication.JWTToken), args.Error(1)
+	return args.Get(0).(string), args.Error(1)
 }
 
 func TestUserUsecase_Create(t *testing.T) {
@@ -242,7 +241,7 @@ func TestUserUsecase_Login(t *testing.T) {
 		}
 
 		mockRepo.On("Login", ctx, validEmail).Return(fakeUser, nil)
-		mockTokenGen.On("GenerateToken", mock.AnythingOfType("map[string]interface {}")).Return(authentication.JWTToken("fake-jwt-token"), nil)
+		mockTokenGen.On("GenerateToken", mock.AnythingOfType("map[string]interface {}")).Return("fake-jwt-token", nil)
 
 		result, err := uc.Login(ctx, dto)
 
@@ -318,7 +317,7 @@ func TestUserUsecase_Login(t *testing.T) {
 		expectedErr := errors.New("failed to generate token")
 
 		mockRepo.On("Login", ctx, validEmail).Return(fakeUser, nil)
-		mockTokenGen.On("GenerateToken", mock.AnythingOfType("map[string]interface {}")).Return(authentication.JWTToken(""), expectedErr)
+		mockTokenGen.On("GenerateToken", mock.AnythingOfType("map[string]interface {}")).Return("", expectedErr)
 
 		result, err := uc.Login(ctx, dto)
 

@@ -8,8 +8,6 @@ import (
 	"context"
 	"fmt"
 	authv1 "proto/gen/auth/v1"
-
-	"gorm.io/gorm"
 )
 
 type AuthTransport struct {
@@ -18,6 +16,20 @@ type AuthTransport struct {
 	ruc usecase.RoleUsecaseInterface
 	jwt authentication.TokenValidator
 	opa authorization.OPAInterface
+}
+
+func NewAuthTransport(
+	userUsecase usecase.UserUsecaseInterface,
+	roleUsecase usecase.RoleUsecaseInterface,
+	tokenValidator authentication.TokenValidator,
+	opa authorization.OPAInterface,
+) *AuthTransport {
+	return &AuthTransport{
+		uuc: userUsecase,
+		ruc: roleUsecase,
+		jwt: tokenValidator,
+		opa: opa,
+	}
 }
 
 func (a *AuthTransport) validateCredentials(token, action, path string) error {
@@ -51,12 +63,6 @@ func (a *AuthTransport) validateCredentials(token, action, path string) error {
 	}
 
 	return nil
-}
-func NewAuthTransport(db *gorm.DB, uuc usecase.UserUsecaseInterface, ruc usecase.RoleUsecaseInterface) *AuthTransport {
-	return &AuthTransport{
-		uuc: uuc,
-		ruc: ruc,
-	}
 }
 
 func (u *AuthTransport) Login(ctx context.Context, req *authv1.LoginRequest) (*authv1.LoginResponse, error) {

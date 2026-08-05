@@ -9,16 +9,14 @@ import (
 	jwt_go "github.com/golang-jwt/jwt/v5"
 )
 
-type JWTToken string
-
 type JWTInterface interface {
 	TokenGenerator
 	TokenValidator
 }
 
 type TokenGenerator interface {
-	GenerateToken(data any) (JWTToken, error)
-	GenerateShortToken(data any) (JWTToken, error)
+	GenerateToken(data any) (string, error)
+	GenerateShortToken(data any) (string, error)
 }
 
 type TokenValidator interface {
@@ -37,7 +35,7 @@ func NewJWT(env *config.Env) *JWT {
 	}
 }
 
-func (j *JWT) Generate(data any) (string, error) {
+func (j *JWT) GenerateToken(data any) (string, error) {
 
 	claims := jwt_go.MapClaims{
 		"exp":  time.Now().Add(j.timeToLive).Unix(),

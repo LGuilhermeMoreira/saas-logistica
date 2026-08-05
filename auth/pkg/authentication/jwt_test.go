@@ -25,7 +25,7 @@ func TestGenerate_Success(t *testing.T) {
 
 	data := map[string]any{"id": "123"}
 
-	token, err := j.Generate(data)
+	token, err := j.GenerateToken(data)
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token)
@@ -34,7 +34,7 @@ func TestGenerate_Success(t *testing.T) {
 func TestValidate_Success(t *testing.T) {
 	j := newTestJWT(time.Minute, "secret")
 
-	token, err := j.Generate(map[string]any{"id": "123"})
+	token, err := j.GenerateToken(map[string]any{"id": "123"})
 	assert.NoError(t, err)
 
 	err = j.Validate(token)
@@ -54,7 +54,7 @@ func TestValidate_InvalidToken(t *testing.T) {
 func TestValidate_ExpiredToken(t *testing.T) {
 	j := newTestJWT(-time.Minute, "secret") // já nasce expirado
 
-	token, err := j.Generate(map[string]any{"id": "123"})
+	token, err := j.GenerateToken(map[string]any{"id": "123"})
 	assert.NoError(t, err)
 
 	err = j.Validate(token)
@@ -67,7 +67,7 @@ func TestValidate_InvalidSignature(t *testing.T) {
 	j1 := newTestJWT(time.Minute, "secret1")
 	j2 := newTestJWT(time.Minute, "secret2")
 
-	token, err := j1.Generate(map[string]any{"id": "123"})
+	token, err := j1.GenerateToken(map[string]any{"id": "123"})
 	assert.NoError(t, err)
 
 	err = j2.Validate(token)
@@ -80,7 +80,7 @@ func TestExtractClaims_Success(t *testing.T) {
 
 	data := map[string]any{"id": "123"}
 
-	token, err := j.Generate(data)
+	token, err := j.GenerateToken(data)
 	assert.NoError(t, err)
 
 	claims, err := j.ExtractClaims(token)
@@ -104,7 +104,7 @@ func TestExtractClaims_InvalidSignature(t *testing.T) {
 	j1 := newTestJWT(time.Minute, "secret1")
 	j2 := newTestJWT(time.Minute, "secret2")
 
-	token, err := j1.Generate(map[string]any{"id": "123"})
+	token, err := j1.GenerateToken(map[string]any{"id": "123"})
 	assert.NoError(t, err)
 
 	claims, err := j2.ExtractClaims(token)
@@ -118,7 +118,7 @@ func TestGenerate_ContainsClaims(t *testing.T) {
 
 	data := map[string]any{"id": "123"}
 
-	tokenStr, err := j.Generate(data)
+	tokenStr, err := j.GenerateToken(data)
 	assert.NoError(t, err)
 
 	token, err := jwt_go.Parse(tokenStr, func(t *jwt_go.Token) (any, error) {

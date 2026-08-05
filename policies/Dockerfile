@@ -1,4 +1,3 @@
-# Usa a imagem oficial do OPA
 FROM openpolicyagent/opa:latest
 
 WORKDIR /app
