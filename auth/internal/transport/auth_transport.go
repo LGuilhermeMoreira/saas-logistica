@@ -97,7 +97,7 @@ func (u *AuthTransport) CreateUser(ctx context.Context, req *authv1.CreateUserRe
 
 	return &authv1.CreateUserResponse{
 		Id:    result.ID.String(),
-		Name:  result.Email,
+		Name:  result.Name,
 		Email: result.Email,
 	}, nil
 }
@@ -125,7 +125,16 @@ func (u *AuthTransport) CreateRole(ctx context.Context, req *authv1.CreateRoleRe
 		return nil, err
 	}
 
-	result, err := u.ruc.Create(ctx, input.CreateRoleInput{Name: req.Name, Description: req.Description})
+	permissions := make([]input.PermissionInput, len(req.Permissions))
+
+	for index, permission := range req.Permissions {
+		permissions[index] = input.PermissionInput{
+			Action: permission.Action,
+			Path:   permission.Path,
+		}
+	}
+
+	result, err := u.ruc.Create(ctx, input.CreateRoleInput{Name: req.Name, Description: req.Description, Permissions: permissions})
 	if err != nil {
 		return nil, err
 	}
@@ -135,10 +144,20 @@ func (u *AuthTransport) CreateRole(ctx context.Context, req *authv1.CreateRoleRe
 		desc = *result.Description
 	}
 
+	perm := make([]*authv1.Permission, len(result.Permissions))
+
+	for i, v := range result.Permissions {
+		perm[i] = &authv1.Permission{
+			Action: v.Action,
+			Path:   v.Path,
+		}
+	}
+
 	return &authv1.CreateRoleResponse{
 		Id:          result.ID.String(),
 		Name:        result.Name,
 		Description: desc,
+		Permissions: perm,
 	}, nil
 }
 func (u *AuthTransport) DeleteRole(ctx context.Context, req *authv1.DeleteRoleRequest) (*authv1.DeleteRoleResponse, error) {
@@ -155,5 +174,99 @@ func (u *AuthTransport) DeleteRole(ctx context.Context, req *authv1.DeleteRoleRe
 
 	return &authv1.DeleteRoleResponse{
 		Msg: "OK",
+	}, nil
+}
+
+func (u *AuthTransport) FindUserByID(ctx context.Context, req *authv1.FindUserByIDRequest) (*authv1.FindUserByIDResponse, error) {
+	err := u.validateCredentials(req.AuthField.Token, req.AuthField.Action, req.AuthField.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := u.uuc.FindByID(ctx, input.FindByIDUserInput{
+		ID: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &authv1.FindUserByIDResponse{
+		Name:   result.Name,
+		Email:  result.Email,
+		Id:     result.ID.String(),
+		RoleId: result.RoleID.String(),
+	}, nil
+
+	// return nil, status.Error(codes.Unimplemented, "method FindUserByID not implemented")
+}
+func (u *AuthTransport) FindRoleByID(ctx context.Context, req *authv1.FindRoleByIDRequest) (*authv1.FindRoleByIDResponse, error) {
+	if err := u.validateCredentials(req.AuthField.Token, req.AuthField.Action, req.AuthField.Path); err != nil {
+		return nil, err
+	}
+
+	result, err := u.ruc.FindByID(ctx, input.FindByIDRoleInput{ID: req.Id})
+	if err != nil {
+		return nil, err
+	}
+
+	var desc string
+	if result.Description != nil {
+		desc = *result.Description
+	}
+
+	perm := make([]*authv1.Permission, len(result.Permissions))
+
+	for i, v := range result.Permissions {
+		perm[i] = &authv1.Permission{
+			Action: v.Action,
+			Path:   v.Path,
+		}
+	}
+
+	return &authv1.FindRoleByIDResponse{
+		Id:          result.ID.String(),
+		Description: desc,
+		Name:        result.Name,
+		Permissions: perm,
+	}, nil
+
+}
+
+func (u *AuthTransport) FindAllRoles(
+	ctx context.Context,
+	req *authv1.FindAllRolesRequest,
+) (*authv1.FindAllRolesResponse, error) {
+	result, err := u.ruc.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	roles := make([]*authv1.Role, len(result))
+
+	for i, role := range result {
+		permissions := make([]*authv1.Permission, len(role.Permissions))
+
+		for j, permission := range role.Permissions {
+			permissions[j] = &authv1.Permission{
+				Action: permission.Action,
+				Path:   permission.Path,
+			}
+		}
+
+		var desc string
+		if role.Description != nil {
+			desc = *role.Description
+		}
+
+		roles[i] = &authv1.Role{
+			Id:          role.ID.String(),
+			Name:        role.Name,
+			Description: desc,
+			Permissions: permissions,
+		}
+	}
+
+	return &authv1.FindAllRolesResponse{
+		Roles: roles,
 	}, nil
 }

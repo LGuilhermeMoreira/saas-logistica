@@ -1,0 +1,1 @@
+DELETE http://localhost:8080/auth/delete-user/01a01a74-f706-7271-9f61-398d28fdd9c4 HTTP/1.1

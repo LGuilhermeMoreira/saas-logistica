@@ -1,0 +1,1 @@
+DELETE http://localhost:8080/auth/delete-role/01a0181a-4557-760d-8ed9-09dd62e34f63 HTTP/1.1

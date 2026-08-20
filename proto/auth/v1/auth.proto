@@ -79,10 +79,56 @@ message DeleteRoleResponse{
 string msg = 1;
 }
 
+// find user by id
+message FindUserByIDRequest{
+    string id = 1;
+    AuthField auth_field =2;
+}
+
+message FindUserByIDResponse{
+    string name = 1;
+    string email = 2;
+    string id = 3;
+    string role_id = 4;
+}
+
+
+// find role by id
+message FindRoleByIDRequest{
+    string id = 1;
+    AuthField auth_field =2;
+}
+
+message FindRoleByIDResponse{
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    repeated Permission permissions = 4;
+}
+
+
+// find all roles
+
+message Role {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  repeated Permission permissions = 4;
+}
+
+message FindAllRolesRequest {}
+
+message FindAllRolesResponse {
+  repeated Role roles = 1;
+}
+
 service AuthService {
-rpc Login(LoginRequest) returns (LoginResponse);
-rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
-rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
-rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse);
-rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse);
+  rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse);
+  rpc FindUserByID(FindUserByIDRequest) returns (FindUserByIDResponse);
+  rpc FindRoleByID(FindRoleByIDRequest) returns (FindRoleByIDResponse);
+  rpc FindAllRoles(FindAllRolesRequest) returns (FindAllRolesResponse);
 }

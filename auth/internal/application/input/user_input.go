@@ -15,3 +15,7 @@ type LoginInput struct {
 type DeleteUserInput struct {
 	ID string
 }
+
+type FindByIDUserInput struct {
+	ID string
+}

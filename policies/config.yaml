@@ -10,7 +10,7 @@ services:
 bundles:
   authz_bundle:
     service: s3_minio
-    resource: seu-bucket-de-politicas/bundle.tar.gz 
+    resource: my-bucket/bundle.tar.gz 
     polling:
       min_delay_seconds: 15
       max_delay_seconds: 30

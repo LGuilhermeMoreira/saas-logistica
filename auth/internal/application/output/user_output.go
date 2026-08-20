@@ -2,7 +2,7 @@ package output
 
 import "github.com/google/uuid"
 
-type CreateUserOutput struct {
+type UserOutput struct {
 	ID     uuid.UUID
 	Name   string
 	Email  string

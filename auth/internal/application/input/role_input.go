@@ -28,3 +28,7 @@ func (c CreateRoleInput) PermissionToMap() []map[string]any {
 type DeleteRoleInput struct {
 	ID string
 }
+
+type FindByIDRoleInput struct {
+	ID string
+}

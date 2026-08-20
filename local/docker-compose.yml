@@ -1,0 +1,334 @@
+# services:
+#   gateway:
+#     build:
+#       context: ../
+#       dockerfile: gateway/Dockerfile
+#     container_name: gateway
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       PORT: 8080
+#       LOG_MODE: dev
+#       AUTH_BASE_URL: "dns:///auth:50051"
+#       OPA_ADDRESS: "http://gateway_opa:8181/v1/data/authz/allow"
+#       JWT_SECRET: "your_jwt_secret"
+#       JWT_TTL: "8h"
+#     depends_on:
+#       - auth
+#       - gateway_opa 
+#     networks:
+#       - app-network
+
+#   gateway_opa:
+#     build:
+#       context: ../
+#       dockerfile: policies/Dockerfile
+#     container_name: gateway_opa
+#     ports:
+#       - "8182:8181"
+#     volumes:
+#       - ../policies:/app/policies
+#       - ../policies/config.yaml:/app/config.yaml
+#     command: ["run", "--server", "--config-file=/app/config.yaml", "/app/policies/"]
+#     networks:
+#       - app-network
+
+#   minio:
+#     image: minio/minio
+#     container_name: minio
+#     ports:
+#       - "9000:9000"
+#       - "9001:9001"
+#     environment:
+#       MINIO_ROOT_USER: minioadmin
+#       MINIO_ROOT_PASSWORD: minioadmin
+#       MINIO_REGION: us-east-1
+#     volumes:
+#       - minio_data:/dataq
+#     command: server /data --console-address ":9001"
+#     healthcheck:
+#       test: [ "CMD", "mc", "ready", "local" ]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 5
+#     networks:
+#       - app-network
+  
+#   minio_init:
+#     image: minio/mc
+#     container_name: minio_init
+#     depends_on:
+#       minio:
+#         condition: service_healthy
+#     entrypoint: >
+#       /bin/sh -c "
+#       mc alias set local http://minio:9000 minioadmin minioadmin;
+#       mc mb --ignore-existing local/my-bucket;
+#       exit 0;
+#       "
+#     networks:
+#       - app-network
+
+#   auth_postgres: 
+#     image: postgres:13
+#     container_name: auth_postgres
+#     environment:
+#       POSTGRES_DB: your_db_name
+#       POSTGRES_USER: your_user
+#       POSTGRES_PASSWORD: your_password
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     healthcheck:
+#       test: [ "CMD-SHELL", "pg_isready -U your_user -d your_db_name" ]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+#     networks:
+#       - app-network
+
+#   auth_opa:
+#     build:
+#       context: ../
+#       dockerfile: policies/Dockerfile
+#     container_name: auth_opa
+#     ports:
+#       - "8183:8181"
+#     volumes:
+#       - ../policies:/app/policies
+#       - ../policies/config.yaml:/app/config.yaml
+#     command: ["run", "--server", "--config-file=/app/config.yaml", "/app/policies/"]
+#     networks:
+#       - app-network
+
+#   auth:
+#     build:
+#       context: ../
+#       dockerfile: auth/Dockerfile
+#     container_name: auth
+#     ports:
+#       - "50051:50051"
+#     environment:
+#       PORT: 50051
+#       LOG_MODE: dev
+#       JWT_SECRET: "your_jwt_secret"
+#       JWT_TTL: "8h"
+#       OPA_ADDRESS: "http://auth_opa:8181/v1/data/authz/allow"
+#       DATABASE_NAME: your_db_name
+#       DATABASE_USER: your_user
+#       DATABASE_PASSWORD: your_password
+#       DATABASE_HOST: auth_postgres
+#       DATABASE_SSL_MODE: disable
+#       DATABASE_PORT: 5432
+#       STORAGE_BUCKET_NAME: "my-bucket"
+#       STORAGE_URI: "minio:9000"
+#       STORAGE_ACCESS_KEY_ID: minioadmin
+#       STORAGE_SECRECT_ACCESS_KEY: minioadmin
+#       STORAGE_USE_SSL: "false"
+#       STORAGE_REGION: "us-east-1"
+#       STORAGE_SIGNED_URL_EXPIRATION: "15m"
+#     depends_on:
+#       auth_postgres:
+#         condition: service_healthy
+#       minio:
+#         condition: service_healthy
+#       auth_opa: 
+#         condition: service_started
+#     networks:
+#       - app-network
+
+# volumes:
+#   postgres_data:
+#   minio_data:
+
+# networks:
+#   app-network:
+#     driver: bridge
+
+
+
+services:
+  gateway:
+    build:
+      context: ../
+      dockerfile: gateway/Dockerfile
+    container_name: gateway
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      LOG_MODE: dev
+      AUTH_BASE_URL: "dns:///auth:50051"
+      OPA_ADDRESS: "http://gateway_opa:8181/v1/data/authz/allow"
+      JWT_SECRET: "your_jwt_secret"
+      JWT_TTL: "8h"
+    depends_on:
+      - auth
+      - gateway_opa 
+    networks:
+      - app-network
+
+  gateway_opa:
+    build:
+      context: ../
+      dockerfile: policies/Dockerfile
+    container_name: gateway_opa
+    ports:
+      - "8182:8181"
+    volumes:
+      - ../policies:/app/policies
+      - ../policies/config.yaml:/app/config.yaml
+    command: ["run", "--server", "--config-file=/app/config.yaml", "/app/policies/"]
+    networks:
+      - app-network
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_REGION: us-east-1
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: [ "CMD", "mc", "ready", "local" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+  
+  minio_init:
+    image: minio/mc
+    container_name: minio_init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minioadmin minioadmin;
+      mc mb --ignore-existing local/my-bucket;
+      exit 0;
+      "
+    networks:
+      - app-network
+
+  auth_postgres: 
+    image: postgres:13
+    container_name: auth_postgres
+    environment:
+      POSTGRES_DB: your_db_name
+      POSTGRES_USER: your_user
+      POSTGRES_PASSWORD: your_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U your_user -d your_db_name" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  auth_opa:
+    build:
+      context: ../
+      dockerfile: policies/Dockerfile
+    container_name: auth_opa
+    ports:
+      - "8183:8181"
+    volumes:
+      - ../policies:/app/policies
+      - ../policies/config.yaml:/app/config.yaml
+    command: ["run", "--server", "--config-file=/app/config.yaml", "/app/policies/"]
+    networks:
+      - app-network
+
+  auth:
+    build:
+      context: ../
+      dockerfile: auth/Dockerfile
+    container_name: auth
+    ports:
+      - "50051:50051"
+    environment:
+      PORT: 50051
+      LOG_MODE: dev
+      JWT_SECRET: "your_jwt_secret"
+      JWT_TTL: "8h"
+      OPA_ADDRESS: "http://auth_opa:8181/v1/data/authz/allow"
+      DATABASE_NAME: your_db_name
+      DATABASE_USER: your_user
+      DATABASE_PASSWORD: your_password
+      DATABASE_HOST: auth_postgres
+      DATABASE_SSL_MODE: disable
+      DATABASE_PORT: 5432
+      STORAGE_BUCKET_NAME: "my-bucket"
+      STORAGE_URI: "minio:9000"
+      STORAGE_ACCESS_KEY_ID: minioadmin
+      STORAGE_SECRECT_ACCESS_KEY: minioadmin
+      STORAGE_USE_SSL: "false"
+      STORAGE_REGION: "us-east-1"
+      STORAGE_SIGNED_URL_EXPIRATION: "15m"
+    depends_on:
+      auth_postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      auth_opa: 
+        condition: service_started
+    networks:
+      - app-network
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ../observability/loki-config.yaml:/etc/loki/local-config.yaml
+    networks:
+      - app-network
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ../observability/promtail-config.yaml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - loki
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  minio_data:
+
+networks:
+  app-network:
+    driver: bridge

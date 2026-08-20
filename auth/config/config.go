@@ -9,10 +9,12 @@ import (
 
 type Env struct {
 	PORT       string
+	LOG_MODE   string
 	JWT_SECRET string
 	JWT_TTL    time.Duration
 
 	OPA_ADDRESS string
+
 
 	DATABASE_NAME     string
 	DATABASE_USER     string
@@ -51,8 +53,14 @@ func NewEnv() (*Env, error) {
 		opaAddress = "http://localhost:8181/v1/data/authz/allow"
 	}
 
+	logMode := os.Getenv("LOG_MODE")
+	if logMode == "" {
+		logMode = "dev"
+	}
+
 	return &Env{
 		PORT:       os.Getenv("PORT"),
+		LOG_MODE:   logMode,
 		JWT_SECRET: os.Getenv("JWT_SECRET"),
 		JWT_TTL:    jwtTTL,
 

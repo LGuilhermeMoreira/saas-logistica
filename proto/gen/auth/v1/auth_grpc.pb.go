@@ -19,11 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_Login_FullMethodName      = "/auth.v1.AuthService/Login"
-	AuthService_CreateUser_FullMethodName = "/auth.v1.AuthService/CreateUser"
-	AuthService_DeleteUser_FullMethodName = "/auth.v1.AuthService/DeleteUser"
-	AuthService_CreateRole_FullMethodName = "/auth.v1.AuthService/CreateRole"
-	AuthService_DeleteRole_FullMethodName = "/auth.v1.AuthService/DeleteRole"
+	AuthService_Login_FullMethodName        = "/auth.v1.AuthService/Login"
+	AuthService_CreateUser_FullMethodName   = "/auth.v1.AuthService/CreateUser"
+	AuthService_DeleteUser_FullMethodName   = "/auth.v1.AuthService/DeleteUser"
+	AuthService_CreateRole_FullMethodName   = "/auth.v1.AuthService/CreateRole"
+	AuthService_DeleteRole_FullMethodName   = "/auth.v1.AuthService/DeleteRole"
+	AuthService_FindUserByID_FullMethodName = "/auth.v1.AuthService/FindUserByID"
+	AuthService_FindRoleByID_FullMethodName = "/auth.v1.AuthService/FindRoleByID"
+	AuthService_FindAllRoles_FullMethodName = "/auth.v1.AuthService/FindAllRoles"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -35,6 +38,9 @@ type AuthServiceClient interface {
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
 	CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*CreateRoleResponse, error)
 	DeleteRole(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*DeleteRoleResponse, error)
+	FindUserByID(ctx context.Context, in *FindUserByIDRequest, opts ...grpc.CallOption) (*FindUserByIDResponse, error)
+	FindRoleByID(ctx context.Context, in *FindRoleByIDRequest, opts ...grpc.CallOption) (*FindRoleByIDResponse, error)
+	FindAllRoles(ctx context.Context, in *FindAllRolesRequest, opts ...grpc.CallOption) (*FindAllRolesResponse, error)
 }
 
 type authServiceClient struct {
@@ -95,6 +101,36 @@ func (c *authServiceClient) DeleteRole(ctx context.Context, in *DeleteRoleReques
 	return out, nil
 }
 
+func (c *authServiceClient) FindUserByID(ctx context.Context, in *FindUserByIDRequest, opts ...grpc.CallOption) (*FindUserByIDResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindUserByIDResponse)
+	err := c.cc.Invoke(ctx, AuthService_FindUserByID_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) FindRoleByID(ctx context.Context, in *FindRoleByIDRequest, opts ...grpc.CallOption) (*FindRoleByIDResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindRoleByIDResponse)
+	err := c.cc.Invoke(ctx, AuthService_FindRoleByID_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) FindAllRoles(ctx context.Context, in *FindAllRolesRequest, opts ...grpc.CallOption) (*FindAllRolesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindAllRolesResponse)
+	err := c.cc.Invoke(ctx, AuthService_FindAllRoles_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -104,6 +140,9 @@ type AuthServiceServer interface {
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
 	CreateRole(context.Context, *CreateRoleRequest) (*CreateRoleResponse, error)
 	DeleteRole(context.Context, *DeleteRoleRequest) (*DeleteRoleResponse, error)
+	FindUserByID(context.Context, *FindUserByIDRequest) (*FindUserByIDResponse, error)
+	FindRoleByID(context.Context, *FindRoleByIDRequest) (*FindRoleByIDResponse, error)
+	FindAllRoles(context.Context, *FindAllRolesRequest) (*FindAllRolesResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -128,6 +167,15 @@ func (UnimplementedAuthServiceServer) CreateRole(context.Context, *CreateRoleReq
 }
 func (UnimplementedAuthServiceServer) DeleteRole(context.Context, *DeleteRoleRequest) (*DeleteRoleResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteRole not implemented")
+}
+func (UnimplementedAuthServiceServer) FindUserByID(context.Context, *FindUserByIDRequest) (*FindUserByIDResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method FindUserByID not implemented")
+}
+func (UnimplementedAuthServiceServer) FindRoleByID(context.Context, *FindRoleByIDRequest) (*FindRoleByIDResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method FindRoleByID not implemented")
+}
+func (UnimplementedAuthServiceServer) FindAllRoles(context.Context, *FindAllRolesRequest) (*FindAllRolesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method FindAllRoles not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -240,6 +288,60 @@ func _AuthService_DeleteRole_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_FindUserByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindUserByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).FindUserByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_FindUserByID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).FindUserByID(ctx, req.(*FindUserByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_FindRoleByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindRoleByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).FindRoleByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_FindRoleByID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).FindRoleByID(ctx, req.(*FindRoleByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_FindAllRoles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindAllRolesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).FindAllRoles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_FindAllRoles_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).FindAllRoles(ctx, req.(*FindAllRolesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -266,6 +368,18 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteRole",
 			Handler:    _AuthService_DeleteRole_Handler,
+		},
+		{
+			MethodName: "FindUserByID",
+			Handler:    _AuthService_FindUserByID_Handler,
+		},
+		{
+			MethodName: "FindRoleByID",
+			Handler:    _AuthService_FindRoleByID_Handler,
+		},
+		{
+			MethodName: "FindAllRoles",
+			Handler:    _AuthService_FindAllRoles_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

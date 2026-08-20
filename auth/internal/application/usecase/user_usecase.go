@@ -16,9 +16,10 @@ import (
 )
 
 type UserUsecaseInterface interface {
-	Create(ctx context.Context, dto input.CreateUserInput) (*output.CreateUserOutput, error)
+	Create(ctx context.Context, dto input.CreateUserInput) (*output.UserOutput, error)
 	Delete(ctx context.Context, dto input.DeleteUserInput) error
 	Login(ctx context.Context, dto input.LoginInput) (*output.LoginOutput, error)
+	FindByID(ctx context.Context, dto input.FindByIDUserInput) (*output.UserOutput, error)
 }
 
 type UserUsecase struct {
@@ -29,7 +30,7 @@ type UserUsecase struct {
 func NewUserUsecase(repo contract.UserRepositoryInterface, jwt authentication.TokenGenerator) UserUsecaseInterface {
 	return &UserUsecase{repository: repo, jwt: jwt}
 }
-func (c *UserUsecase) Create(ctx context.Context, dto input.CreateUserInput) (*output.CreateUserOutput, error) {
+func (c *UserUsecase) Create(ctx context.Context, dto input.CreateUserInput) (*output.UserOutput, error) {
 	result, err := entity.NewUser(dto.Name, dto.Email, dto.Password, dto.RoleID)
 	if err != nil {
 		return nil, err
@@ -40,7 +41,7 @@ func (c *UserUsecase) Create(ctx context.Context, dto input.CreateUserInput) (*o
 		return nil, err
 	}
 
-	return &output.CreateUserOutput{
+	return &output.UserOutput{
 		ID:     result.ID,
 		RoleID: result.RoleID,
 		Email:  result.Email,
@@ -82,5 +83,24 @@ func (c *UserUsecase) Login(ctx context.Context, dto input.LoginInput) (*output.
 
 	return &output.LoginOutput{
 		Token: string(token),
+	}, nil
+}
+
+func (c *UserUsecase) FindByID(ctx context.Context, dto input.FindByIDUserInput) (*output.UserOutput, error) {
+	id, err := uuid.Parse(dto.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	model, err := c.repository.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &output.UserOutput{
+		Name:   model.Name,
+		Email:  model.Email,
+		ID:     model.ID,
+		RoleID: model.RoleID,
 	}, nil
 }

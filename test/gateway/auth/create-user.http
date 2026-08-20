@@ -1,0 +1,9 @@
+POST http://localhost:8080/auth/create-user HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Guigui Malvadeza",
+    "email": "leite@email.com",
+    "password": "123321222",
+    "role_id": "01a0181a-4557-760d-8ed9-09dd62e34f63"
+}
