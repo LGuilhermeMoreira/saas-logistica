@@ -3,6 +3,7 @@ package usecase_test
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"testing"
 
 	"github.com/google/uuid"
@@ -56,7 +57,7 @@ func TestRoleUsecase_Create(t *testing.T) {
 	t.Run("should create a role with success", func(t *testing.T) {
 		mockRepo := new(MockRoleRepository)
 		mockOPA := new(MockOPASyncService)
-		uc := usecase.NewRoleUsecase(mockRepo, mockOPA)
+		uc := usecase.NewRoleUsecase(mockRepo, mockOPA, slog.Default())
 
 		dto := input.CreateRoleInput{
 			Name:        "Admin",
@@ -85,7 +86,7 @@ func TestRoleUsecase_Create(t *testing.T) {
 	t.Run("should return error when name is empty (Entity Rule)", func(t *testing.T) {
 		mockRepo := new(MockRoleRepository)
 		mockOPA := new(MockOPASyncService)
-		uc := usecase.NewRoleUsecase(mockRepo, mockOPA)
+		uc := usecase.NewRoleUsecase(mockRepo, mockOPA, slog.Default())
 
 		dto := input.CreateRoleInput{
 			Name:        "   ",
@@ -108,7 +109,7 @@ func TestRoleUsecase_Create(t *testing.T) {
 	t.Run("should return error when permissions are empty (Entity Rule)", func(t *testing.T) {
 		mockRepo := new(MockRoleRepository)
 		mockOPA := new(MockOPASyncService)
-		uc := usecase.NewRoleUsecase(mockRepo, mockOPA)
+		uc := usecase.NewRoleUsecase(mockRepo, mockOPA, slog.Default())
 
 		dto := input.CreateRoleInput{
 			Name:        "Admin",
@@ -129,7 +130,7 @@ func TestRoleUsecase_Create(t *testing.T) {
 	t.Run("should return error when repository fails to persist", func(t *testing.T) {
 		mockRepo := new(MockRoleRepository)
 		mockOPA := new(MockOPASyncService)
-		uc := usecase.NewRoleUsecase(mockRepo, mockOPA)
+		uc := usecase.NewRoleUsecase(mockRepo, mockOPA, slog.Default())
 
 		dto := input.CreateRoleInput{
 			Name:        "Admin",
@@ -154,7 +155,7 @@ func TestRoleUsecase_Create(t *testing.T) {
 	t.Run("should return error when OPA Sync fails", func(t *testing.T) {
 		mockRepo := new(MockRoleRepository)
 		mockOPA := new(MockOPASyncService)
-		uc := usecase.NewRoleUsecase(mockRepo, mockOPA)
+		uc := usecase.NewRoleUsecase(mockRepo, mockOPA, slog.Default())
 
 		dto := input.CreateRoleInput{
 			Name:        "Admin",
@@ -186,7 +187,7 @@ func TestRoleUsecase_Delete(t *testing.T) {
 	t.Run("should delete the role with success", func(t *testing.T) {
 		mockRepo := new(MockRoleRepository)
 		mockOPA := new(MockOPASyncService)
-		uc := usecase.NewRoleUsecase(mockRepo, mockOPA)
+		uc := usecase.NewRoleUsecase(mockRepo, mockOPA, slog.Default())
 
 		dto := input.DeleteRoleInput{ID: validUUID.String()}
 		fakeRole := &entity.Role{ID: validUUID, Name: "Admin"}
@@ -203,7 +204,7 @@ func TestRoleUsecase_Delete(t *testing.T) {
 	t.Run("should return an error if uuid is invalid", func(t *testing.T) {
 		mockRepo := new(MockRoleRepository)
 		mockOPA := new(MockOPASyncService)
-		uc := usecase.NewRoleUsecase(mockRepo, mockOPA)
+		uc := usecase.NewRoleUsecase(mockRepo, mockOPA, slog.Default())
 
 		dto := input.DeleteRoleInput{ID: "invalid-uuid"}
 
@@ -217,7 +218,7 @@ func TestRoleUsecase_Delete(t *testing.T) {
 	t.Run("should return an error if role is not found", func(t *testing.T) {
 		mockRepo := new(MockRoleRepository)
 		mockOPA := new(MockOPASyncService)
-		uc := usecase.NewRoleUsecase(mockRepo, mockOPA)
+		uc := usecase.NewRoleUsecase(mockRepo, mockOPA, slog.Default())
 
 		dto := input.DeleteRoleInput{ID: validUUID.String()}
 		expectedErr := errors.New("role not found")
@@ -234,7 +235,7 @@ func TestRoleUsecase_Delete(t *testing.T) {
 	t.Run("should return an error if the repository fails to delete", func(t *testing.T) {
 		mockRepo := new(MockRoleRepository)
 		mockOPA := new(MockOPASyncService)
-		uc := usecase.NewRoleUsecase(mockRepo, mockOPA)
+		uc := usecase.NewRoleUsecase(mockRepo, mockOPA, slog.Default())
 
 		dto := input.DeleteRoleInput{ID: validUUID.String()}
 		fakeRole := &entity.Role{ID: validUUID, Name: "Admin"}

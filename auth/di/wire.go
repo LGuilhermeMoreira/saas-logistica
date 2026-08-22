@@ -4,6 +4,8 @@
 package di
 
 import (
+	"log/slog" // Importe o slog aqui
+
 	"auth/config"
 	"auth/internal/application/usecase"
 	"auth/internal/infra/repository"
@@ -11,10 +13,12 @@ import (
 	"auth/internal/transport"
 	"auth/pkg/authentication"
 	"auth/pkg/authorization"
+	grpcmiddleware "auth/pkg/grpc_middleware"
 
 	"github.com/google/wire"
 	"github.com/minio/minio-go/v7"
 	"gorm.io/gorm"
+	// "gorm.io/gorm/logger" (Pode remover se não for usar o logger do gorm aqui)
 )
 
 var AuthProviderSet = wire.NewSet(
@@ -23,7 +27,8 @@ var AuthProviderSet = wire.NewSet(
 	wire.Bind(new(authentication.TokenGenerator), new(*authentication.JWT)),
 )
 
-func InitGRPCAuthTransport(env *config.Env, db *gorm.DB, s3Client *minio.Client) (*transport.AuthTransport, error) {
+// Adicionei log *slog.Logger nos parâmetros
+func InitGRPCAuthTransport(env *config.Env, db *gorm.DB, s3Client *minio.Client, log *slog.Logger) (*transport.AuthTransport, error) {
 	wire.Build(
 		// JWT
 		AuthProviderSet,
@@ -35,9 +40,24 @@ func InitGRPCAuthTransport(env *config.Env, db *gorm.DB, s3Client *minio.Client)
 		service.NewOPASyncService,
 		usecase.NewRoleUsecase,
 		// OPA
-		authorization.NewOPA,
+		// authorization.NewOPA,
 		// gRPC
 		transport.NewAuthTransport,
+	)
+	return nil, nil
+}
+
+var ValidateCredentialsProviderSet = wire.NewSet(
+	authentication.NewJWT,
+	wire.Bind(new(authentication.TokenValidator), new(*authentication.JWT)),
+)
+
+// Se o seu middleware gRPC também precisar do logger, adicione o parâmetro aqui também!
+func InitGRPCMiddleware(env *config.Env, log *slog.Logger) (*grpcmiddleware.GRPCMiddleware, error) {
+	wire.Build(
+		ValidateCredentialsProviderSet,
+		authorization.NewOPA,
+		grpcmiddleware.NewGRPCMiddleware,
 	)
 	return nil, nil
 }

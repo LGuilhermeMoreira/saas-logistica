@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"log/slog"
 	"testing"
 
 	"auth/internal/domain/entity"
@@ -80,7 +81,7 @@ func TestOPASyncService_SyncPolicies(t *testing.T) {
 			},
 		}
 
-		svc := service.NewOPASyncService(repo, storage)
+		svc := service.NewOPASyncService(repo, storage, slog.Default())
 		err := svc.SyncPolicies(ctx)
 
 		assert.NoError(t, err)
@@ -95,7 +96,7 @@ func TestOPASyncService_SyncPolicies(t *testing.T) {
 
 		storage := &mockStorageService{}
 
-		svc := service.NewOPASyncService(repo, storage)
+		svc := service.NewOPASyncService(repo, storage, slog.Default())
 		err := svc.SyncPolicies(ctx)
 
 		assert.Error(t, err)
@@ -115,7 +116,7 @@ func TestOPASyncService_SyncPolicies(t *testing.T) {
 			},
 		}
 
-		svc := service.NewOPASyncService(repo, storage)
+		svc := service.NewOPASyncService(repo, storage, slog.Default())
 		err := svc.SyncPolicies(ctx)
 
 		assert.Error(t, err)

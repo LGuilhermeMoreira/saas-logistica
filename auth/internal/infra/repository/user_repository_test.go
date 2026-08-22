@@ -4,6 +4,7 @@ import (
 	"auth/internal/domain/entity"
 	"auth/internal/infra/repository"
 	"context"
+	"log/slog"
 	"testing"
 
 	"github.com/glebarez/sqlite"
@@ -25,7 +26,7 @@ func setupUserTestDB(t *testing.T) *gorm.DB {
 
 func TestUserRepository_Create(t *testing.T) {
 	db := setupUserTestDB(t)
-	repo := repository.NewUserRepository(db)
+	repo := repository.NewUserRepository(db, slog.Default())
 	ctx := context.Background()
 
 	userID, _ := uuid.NewV7()
@@ -46,7 +47,7 @@ func TestUserRepository_Create(t *testing.T) {
 
 func TestUserRepository_Delete(t *testing.T) {
 	db := setupUserTestDB(t)
-	repo := repository.NewUserRepository(db)
+	repo := repository.NewUserRepository(db, slog.Default())
 	ctx := context.Background()
 
 	userID, _ := uuid.NewV7()
@@ -68,7 +69,7 @@ func TestUserRepository_Delete(t *testing.T) {
 
 func TestUserRepository_Login(t *testing.T) {
 	db := setupUserTestDB(t)
-	repo := repository.NewUserRepository(db)
+	repo := repository.NewUserRepository(db, slog.Default())
 	ctx := context.Background()
 
 	perm, _ := entity.NewPermission("read", "/dashboard")
@@ -107,7 +108,7 @@ func TestUserRepository_Login(t *testing.T) {
 
 func TestUserRepository_FindByID(t *testing.T) {
 	db := setupUserTestDB(t)
-	repo := repository.NewUserRepository(db)
+	repo := repository.NewUserRepository(db, slog.Default())
 	ctx := context.Background()
 
 	userID, _ := uuid.NewV7()

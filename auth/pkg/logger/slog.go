@@ -1,8 +1,11 @@
 package logger
 
 import (
+	"context"
 	"log/slog"
 	"os"
+
+	"github.com/google/uuid"
 )
 
 func New(logMode string) *slog.Logger {
@@ -27,4 +30,15 @@ func New(logMode string) *slog.Logger {
 
 	logger := slog.New(handler)
 	return logger
+}
+
+type contextKey string
+
+const RequestIDKey contextKey = "request_id"
+
+func ExtractRequestID(ctx context.Context) string {
+	if reqID, ok := ctx.Value(RequestIDKey).(string); ok && reqID != "" {
+		return reqID
+	}
+	return "fallback-" + uuid.New().String()
 }

@@ -4,7 +4,6 @@ import (
 	"gateway/internal/domain/contract"
 	"net/http"
 	authv1 "proto/gen/auth/v1"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +25,7 @@ func (c *AuthController) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := c.authService.Login(input.Email, input.Password)
+	token, err := c.authService.Login(ctx.Request.Context(), input.Email, input.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -42,15 +41,13 @@ func (c *AuthController) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	authField := getAuthField(ctx)
-
-	resp, err := c.authService.CreateUser(input.Name, input.Email, input.Password, input.RoleID, authField)
+	resp, err := c.authService.CreateUser(ctx.Request.Context(), input.Name, input.Email, input.Password, input.RoleID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, CreateUserOutput{
+	ctx.JSON(http.StatusCreated, UserOutput{
 		ID:    resp.Id,
 		Name:  resp.Name,
 		Email: resp.Email,
@@ -59,9 +56,8 @@ func (c *AuthController) CreateUser(ctx *gin.Context) {
 
 func (c *AuthController) DeleteUser(ctx *gin.Context) {
 	id := ctx.Param("id")
-	authField := getAuthField(ctx)
 
-	resp, err := c.authService.DeleteUser(id, authField)
+	resp, err := c.authService.DeleteUser(ctx.Request.Context(), id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -77,7 +73,6 @@ func (c *AuthController) CreateRole(ctx *gin.Context) {
 		return
 	}
 
-	authField := getAuthField(ctx)
 	var permissions []*authv1.Permission
 	for _, p := range input.Permissions {
 		permissions = append(permissions, &authv1.Permission{
@@ -86,21 +81,21 @@ func (c *AuthController) CreateRole(ctx *gin.Context) {
 		})
 	}
 
-	resp, err := c.authService.CreateRole(input.Name, input.Description, permissions, authField)
+	resp, err := c.authService.CreateRole(ctx.Request.Context(), input.Name, input.Description, permissions)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	var createdPermissions []PermissionInput
+	var createdPermissions []Permission
 	for _, p := range resp.Permissions {
-		createdPermissions = append(createdPermissions, PermissionInput{
+		createdPermissions = append(createdPermissions, Permission{
 			Action: p.Action,
 			Path:   p.Path,
 		})
 	}
 
-	ctx.JSON(http.StatusCreated, CreateRoleOutput{
+	ctx.JSON(http.StatusCreated, RoleOutput{
 		ID:          resp.Id,
 		Name:        resp.Name,
 		Description: resp.Description,
@@ -110,9 +105,8 @@ func (c *AuthController) CreateRole(ctx *gin.Context) {
 
 func (c *AuthController) DeleteRole(ctx *gin.Context) {
 	id := ctx.Param("id")
-	authField := getAuthField(ctx)
 
-	resp, err := c.authService.DeleteRole(id, authField)
+	resp, err := c.authService.DeleteRole(ctx.Request.Context(), id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -121,18 +115,69 @@ func (c *AuthController) DeleteRole(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, DeleteRoleOutput{Msg: resp.Msg})
 }
 
-func getAuthField(c *gin.Context) *authv1.AuthField {
-	return &authv1.AuthField{
-		Token:  extractToken(c.GetHeader("Authorization")),
-		Path:   c.Request.URL.Path,
-		Action: c.Request.Method,
+func (c *AuthController) FindUserByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	resp, err := c.authService.FindUserByID(ctx.Request.Context(), id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+
+	ctx.JSON(http.StatusOK, UserOutput{
+		ID:     resp.Id,
+		Email:  resp.Email,
+		Name:   resp.Name,
+		RoleID: resp.RoleId,
+	})
+
 }
 
-func extractToken(authHeader string) string {
-	parts := strings.Split(authHeader, " ")
-	if len(parts) == 2 && parts[0] == "Bearer" {
-		return parts[1]
+func (c *AuthController) FindRoleByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	resp, err := c.authService.FindRoleByID(ctx.Request.Context(), id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
-	return ""
+
+	perm := make([]Permission, len(resp.Permissions))
+
+	for i, v := range resp.Permissions {
+		perm[i] = Permission{
+			Action: v.Action,
+			Path:   v.Path,
+		}
+	}
+
+	ctx.JSON(http.StatusOK, RoleOutput{
+		ID:          resp.Id,
+		Name:        resp.Name,
+		Description: resp.Description,
+		Permissions: perm,
+	})
+
+}
+
+func (c *AuthController) FindAllRoles(ctx *gin.Context) {
+	resp, err := c.authService.FindAllRoles(ctx.Request.Context())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	roles := make([]RoleOutput, len(resp.Roles))
+
+	for i, v := range resp.Roles {
+		roles[i] = RoleOutput{
+			ID:          v.Id,
+			Description: v.Description,
+			Name:        v.Name,
+		}
+	}
+
+	ctx.JSON(http.StatusOK, FindAllRolesOutput{
+		Roles: roles,
+	})
 }

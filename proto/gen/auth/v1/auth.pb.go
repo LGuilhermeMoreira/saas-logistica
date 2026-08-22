@@ -21,66 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type AuthField struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	Path          string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
-	Action        string                 `protobuf:"bytes,3,opt,name=action,proto3" json:"action,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *AuthField) Reset() {
-	*x = AuthField{}
-	mi := &file_auth_v1_auth_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *AuthField) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AuthField) ProtoMessage() {}
-
-func (x *AuthField) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use AuthField.ProtoReflect.Descriptor instead.
-func (*AuthField) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *AuthField) GetToken() string {
-	if x != nil {
-		return x.Token
-	}
-	return ""
-}
-
-func (x *AuthField) GetPath() string {
-	if x != nil {
-		return x.Path
-	}
-	return ""
-}
-
-func (x *AuthField) GetAction() string {
-	if x != nil {
-		return x.Action
-	}
-	return ""
-}
-
 // Login
 type LoginRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -92,7 +32,7 @@ type LoginRequest struct {
 
 func (x *LoginRequest) Reset() {
 	*x = LoginRequest{}
-	mi := &file_auth_v1_auth_proto_msgTypes[1]
+	mi := &file_auth_v1_auth_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -104,7 +44,7 @@ func (x *LoginRequest) String() string {
 func (*LoginRequest) ProtoMessage() {}
 
 func (x *LoginRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[1]
+	mi := &file_auth_v1_auth_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -117,7 +57,7 @@ func (x *LoginRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
 func (*LoginRequest) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{1}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *LoginRequest) GetEmail() string {
@@ -143,7 +83,7 @@ type LoginResponse struct {
 
 func (x *LoginResponse) Reset() {
 	*x = LoginResponse{}
-	mi := &file_auth_v1_auth_proto_msgTypes[2]
+	mi := &file_auth_v1_auth_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -155,7 +95,7 @@ func (x *LoginResponse) String() string {
 func (*LoginResponse) ProtoMessage() {}
 
 func (x *LoginResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[2]
+	mi := &file_auth_v1_auth_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -168,7 +108,7 @@ func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
 func (*LoginResponse) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{2}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *LoginResponse) GetAccessToken() string {
@@ -184,14 +124,13 @@ type CreateUserRequest struct {
 	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
 	RoleId        string                 `protobuf:"bytes,4,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
-	AuthField     *AuthField             `protobuf:"bytes,5,opt,name=auth_field,json=authField,proto3" json:"auth_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateUserRequest) Reset() {
 	*x = CreateUserRequest{}
-	mi := &file_auth_v1_auth_proto_msgTypes[3]
+	mi := &file_auth_v1_auth_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -203,7 +142,7 @@ func (x *CreateUserRequest) String() string {
 func (*CreateUserRequest) ProtoMessage() {}
 
 func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[3]
+	mi := &file_auth_v1_auth_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -216,7 +155,7 @@ func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateUserRequest.ProtoReflect.Descriptor instead.
 func (*CreateUserRequest) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{3}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateUserRequest) GetName() string {
@@ -247,13 +186,6 @@ func (x *CreateUserRequest) GetRoleId() string {
 	return ""
 }
 
-func (x *CreateUserRequest) GetAuthField() *AuthField {
-	if x != nil {
-		return x.AuthField
-	}
-	return nil
-}
-
 type CreateUserResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -265,7 +197,7 @@ type CreateUserResponse struct {
 
 func (x *CreateUserResponse) Reset() {
 	*x = CreateUserResponse{}
-	mi := &file_auth_v1_auth_proto_msgTypes[4]
+	mi := &file_auth_v1_auth_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -277,7 +209,7 @@ func (x *CreateUserResponse) String() string {
 func (*CreateUserResponse) ProtoMessage() {}
 
 func (x *CreateUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[4]
+	mi := &file_auth_v1_auth_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -290,7 +222,7 @@ func (x *CreateUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateUserResponse.ProtoReflect.Descriptor instead.
 func (*CreateUserResponse) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{4}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateUserResponse) GetName() string {
@@ -317,14 +249,13 @@ func (x *CreateUserResponse) GetId() string {
 type DeleteUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	AuthField     *AuthField             `protobuf:"bytes,2,opt,name=auth_field,json=authField,proto3" json:"auth_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteUserRequest) Reset() {
 	*x = DeleteUserRequest{}
-	mi := &file_auth_v1_auth_proto_msgTypes[5]
+	mi := &file_auth_v1_auth_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -336,7 +267,7 @@ func (x *DeleteUserRequest) String() string {
 func (*DeleteUserRequest) ProtoMessage() {}
 
 func (x *DeleteUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[5]
+	mi := &file_auth_v1_auth_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -349,7 +280,7 @@ func (x *DeleteUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteUserRequest.ProtoReflect.Descriptor instead.
 func (*DeleteUserRequest) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{5}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *DeleteUserRequest) GetId() string {
@@ -357,13 +288,6 @@ func (x *DeleteUserRequest) GetId() string {
 		return x.Id
 	}
 	return ""
-}
-
-func (x *DeleteUserRequest) GetAuthField() *AuthField {
-	if x != nil {
-		return x.AuthField
-	}
-	return nil
 }
 
 type DeleteUserResponse struct {
@@ -375,7 +299,7 @@ type DeleteUserResponse struct {
 
 func (x *DeleteUserResponse) Reset() {
 	*x = DeleteUserResponse{}
-	mi := &file_auth_v1_auth_proto_msgTypes[6]
+	mi := &file_auth_v1_auth_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -387,7 +311,7 @@ func (x *DeleteUserResponse) String() string {
 func (*DeleteUserResponse) ProtoMessage() {}
 
 func (x *DeleteUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[6]
+	mi := &file_auth_v1_auth_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -400,7 +324,7 @@ func (x *DeleteUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteUserResponse.ProtoReflect.Descriptor instead.
 func (*DeleteUserResponse) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{6}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DeleteUserResponse) GetMsg() string {
@@ -420,7 +344,7 @@ type Permission struct {
 
 func (x *Permission) Reset() {
 	*x = Permission{}
-	mi := &file_auth_v1_auth_proto_msgTypes[7]
+	mi := &file_auth_v1_auth_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -432,7 +356,7 @@ func (x *Permission) String() string {
 func (*Permission) ProtoMessage() {}
 
 func (x *Permission) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[7]
+	mi := &file_auth_v1_auth_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -445,7 +369,7 @@ func (x *Permission) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Permission.ProtoReflect.Descriptor instead.
 func (*Permission) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{7}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Permission) GetAction() string {
@@ -467,14 +391,13 @@ type CreateRoleRequest struct {
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	Permissions   []*Permission          `protobuf:"bytes,3,rep,name=permissions,proto3" json:"permissions,omitempty"`
-	AuthField     *AuthField             `protobuf:"bytes,4,opt,name=auth_field,json=authField,proto3" json:"auth_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateRoleRequest) Reset() {
 	*x = CreateRoleRequest{}
-	mi := &file_auth_v1_auth_proto_msgTypes[8]
+	mi := &file_auth_v1_auth_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -486,7 +409,7 @@ func (x *CreateRoleRequest) String() string {
 func (*CreateRoleRequest) ProtoMessage() {}
 
 func (x *CreateRoleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[8]
+	mi := &file_auth_v1_auth_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -499,7 +422,7 @@ func (x *CreateRoleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRoleRequest.ProtoReflect.Descriptor instead.
 func (*CreateRoleRequest) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{8}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *CreateRoleRequest) GetName() string {
@@ -523,13 +446,6 @@ func (x *CreateRoleRequest) GetPermissions() []*Permission {
 	return nil
 }
 
-func (x *CreateRoleRequest) GetAuthField() *AuthField {
-	if x != nil {
-		return x.AuthField
-	}
-	return nil
-}
-
 type CreateRoleResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -542,7 +458,7 @@ type CreateRoleResponse struct {
 
 func (x *CreateRoleResponse) Reset() {
 	*x = CreateRoleResponse{}
-	mi := &file_auth_v1_auth_proto_msgTypes[9]
+	mi := &file_auth_v1_auth_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -554,7 +470,7 @@ func (x *CreateRoleResponse) String() string {
 func (*CreateRoleResponse) ProtoMessage() {}
 
 func (x *CreateRoleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[9]
+	mi := &file_auth_v1_auth_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -567,7 +483,7 @@ func (x *CreateRoleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRoleResponse.ProtoReflect.Descriptor instead.
 func (*CreateRoleResponse) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{9}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CreateRoleResponse) GetId() string {
@@ -601,14 +517,13 @@ func (x *CreateRoleResponse) GetPermissions() []*Permission {
 type DeleteRoleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	AuthField     *AuthField             `protobuf:"bytes,2,opt,name=auth_field,json=authField,proto3" json:"auth_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteRoleRequest) Reset() {
 	*x = DeleteRoleRequest{}
-	mi := &file_auth_v1_auth_proto_msgTypes[10]
+	mi := &file_auth_v1_auth_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -620,7 +535,7 @@ func (x *DeleteRoleRequest) String() string {
 func (*DeleteRoleRequest) ProtoMessage() {}
 
 func (x *DeleteRoleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[10]
+	mi := &file_auth_v1_auth_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -633,7 +548,7 @@ func (x *DeleteRoleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRoleRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRoleRequest) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{10}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DeleteRoleRequest) GetId() string {
@@ -641,13 +556,6 @@ func (x *DeleteRoleRequest) GetId() string {
 		return x.Id
 	}
 	return ""
-}
-
-func (x *DeleteRoleRequest) GetAuthField() *AuthField {
-	if x != nil {
-		return x.AuthField
-	}
-	return nil
 }
 
 type DeleteRoleResponse struct {
@@ -659,7 +567,7 @@ type DeleteRoleResponse struct {
 
 func (x *DeleteRoleResponse) Reset() {
 	*x = DeleteRoleResponse{}
-	mi := &file_auth_v1_auth_proto_msgTypes[11]
+	mi := &file_auth_v1_auth_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -671,7 +579,7 @@ func (x *DeleteRoleResponse) String() string {
 func (*DeleteRoleResponse) ProtoMessage() {}
 
 func (x *DeleteRoleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[11]
+	mi := &file_auth_v1_auth_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -684,7 +592,7 @@ func (x *DeleteRoleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRoleResponse.ProtoReflect.Descriptor instead.
 func (*DeleteRoleResponse) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{11}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteRoleResponse) GetMsg() string {
@@ -698,14 +606,13 @@ func (x *DeleteRoleResponse) GetMsg() string {
 type FindUserByIDRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	AuthField     *AuthField             `protobuf:"bytes,2,opt,name=auth_field,json=authField,proto3" json:"auth_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *FindUserByIDRequest) Reset() {
 	*x = FindUserByIDRequest{}
-	mi := &file_auth_v1_auth_proto_msgTypes[12]
+	mi := &file_auth_v1_auth_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -717,7 +624,7 @@ func (x *FindUserByIDRequest) String() string {
 func (*FindUserByIDRequest) ProtoMessage() {}
 
 func (x *FindUserByIDRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[12]
+	mi := &file_auth_v1_auth_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -730,7 +637,7 @@ func (x *FindUserByIDRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindUserByIDRequest.ProtoReflect.Descriptor instead.
 func (*FindUserByIDRequest) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{12}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *FindUserByIDRequest) GetId() string {
@@ -738,13 +645,6 @@ func (x *FindUserByIDRequest) GetId() string {
 		return x.Id
 	}
 	return ""
-}
-
-func (x *FindUserByIDRequest) GetAuthField() *AuthField {
-	if x != nil {
-		return x.AuthField
-	}
-	return nil
 }
 
 type FindUserByIDResponse struct {
@@ -759,7 +659,7 @@ type FindUserByIDResponse struct {
 
 func (x *FindUserByIDResponse) Reset() {
 	*x = FindUserByIDResponse{}
-	mi := &file_auth_v1_auth_proto_msgTypes[13]
+	mi := &file_auth_v1_auth_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -771,7 +671,7 @@ func (x *FindUserByIDResponse) String() string {
 func (*FindUserByIDResponse) ProtoMessage() {}
 
 func (x *FindUserByIDResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[13]
+	mi := &file_auth_v1_auth_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -784,7 +684,7 @@ func (x *FindUserByIDResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindUserByIDResponse.ProtoReflect.Descriptor instead.
 func (*FindUserByIDResponse) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{13}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *FindUserByIDResponse) GetName() string {
@@ -819,14 +719,13 @@ func (x *FindUserByIDResponse) GetRoleId() string {
 type FindRoleByIDRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	AuthField     *AuthField             `protobuf:"bytes,2,opt,name=auth_field,json=authField,proto3" json:"auth_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *FindRoleByIDRequest) Reset() {
 	*x = FindRoleByIDRequest{}
-	mi := &file_auth_v1_auth_proto_msgTypes[14]
+	mi := &file_auth_v1_auth_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -838,7 +737,7 @@ func (x *FindRoleByIDRequest) String() string {
 func (*FindRoleByIDRequest) ProtoMessage() {}
 
 func (x *FindRoleByIDRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[14]
+	mi := &file_auth_v1_auth_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -851,7 +750,7 @@ func (x *FindRoleByIDRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindRoleByIDRequest.ProtoReflect.Descriptor instead.
 func (*FindRoleByIDRequest) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{14}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *FindRoleByIDRequest) GetId() string {
@@ -859,13 +758,6 @@ func (x *FindRoleByIDRequest) GetId() string {
 		return x.Id
 	}
 	return ""
-}
-
-func (x *FindRoleByIDRequest) GetAuthField() *AuthField {
-	if x != nil {
-		return x.AuthField
-	}
-	return nil
 }
 
 type FindRoleByIDResponse struct {
@@ -880,7 +772,7 @@ type FindRoleByIDResponse struct {
 
 func (x *FindRoleByIDResponse) Reset() {
 	*x = FindRoleByIDResponse{}
-	mi := &file_auth_v1_auth_proto_msgTypes[15]
+	mi := &file_auth_v1_auth_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -892,7 +784,7 @@ func (x *FindRoleByIDResponse) String() string {
 func (*FindRoleByIDResponse) ProtoMessage() {}
 
 func (x *FindRoleByIDResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[15]
+	mi := &file_auth_v1_auth_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -905,7 +797,7 @@ func (x *FindRoleByIDResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindRoleByIDResponse.ProtoReflect.Descriptor instead.
 func (*FindRoleByIDResponse) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{15}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *FindRoleByIDResponse) GetId() string {
@@ -948,7 +840,7 @@ type Role struct {
 
 func (x *Role) Reset() {
 	*x = Role{}
-	mi := &file_auth_v1_auth_proto_msgTypes[16]
+	mi := &file_auth_v1_auth_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -960,7 +852,7 @@ func (x *Role) String() string {
 func (*Role) ProtoMessage() {}
 
 func (x *Role) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[16]
+	mi := &file_auth_v1_auth_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -973,7 +865,7 @@ func (x *Role) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Role.ProtoReflect.Descriptor instead.
 func (*Role) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{16}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *Role) GetId() string {
@@ -1012,7 +904,7 @@ type FindAllRolesRequest struct {
 
 func (x *FindAllRolesRequest) Reset() {
 	*x = FindAllRolesRequest{}
-	mi := &file_auth_v1_auth_proto_msgTypes[17]
+	mi := &file_auth_v1_auth_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1024,7 +916,7 @@ func (x *FindAllRolesRequest) String() string {
 func (*FindAllRolesRequest) ProtoMessage() {}
 
 func (x *FindAllRolesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[17]
+	mi := &file_auth_v1_auth_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1037,7 +929,7 @@ func (x *FindAllRolesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindAllRolesRequest.ProtoReflect.Descriptor instead.
 func (*FindAllRolesRequest) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{17}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{16}
 }
 
 type FindAllRolesResponse struct {
@@ -1049,7 +941,7 @@ type FindAllRolesResponse struct {
 
 func (x *FindAllRolesResponse) Reset() {
 	*x = FindAllRolesResponse{}
-	mi := &file_auth_v1_auth_proto_msgTypes[18]
+	mi := &file_auth_v1_auth_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1061,7 +953,7 @@ func (x *FindAllRolesResponse) String() string {
 func (*FindAllRolesResponse) ProtoMessage() {}
 
 func (x *FindAllRolesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_v1_auth_proto_msgTypes[18]
+	mi := &file_auth_v1_auth_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1074,7 +966,7 @@ func (x *FindAllRolesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindAllRolesResponse.ProtoReflect.Descriptor instead.
 func (*FindAllRolesResponse) Descriptor() ([]byte, []int) {
-	return file_auth_v1_auth_proto_rawDescGZIP(), []int{18}
+	return file_auth_v1_auth_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *FindAllRolesResponse) GetRoles() []*Role {
@@ -1088,67 +980,51 @@ var File_auth_v1_auth_proto protoreflect.FileDescriptor
 
 const file_auth_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\x12auth/v1/auth.proto\x12\aauth.v1\"M\n" +
-	"\tAuthField\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path\x12\x16\n" +
-	"\x06action\x18\x03 \x01(\tR\x06action\"@\n" +
+	"\x12auth/v1/auth.proto\x12\aauth.v1\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"2\n" +
 	"\rLoginResponse\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\"\xa5\x01\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\"r\n" +
 	"\x11CreateUserRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpassword\x12\x17\n" +
-	"\arole_id\x18\x04 \x01(\tR\x06roleId\x121\n" +
-	"\n" +
-	"auth_field\x18\x05 \x01(\v2\x12.auth.v1.AuthFieldR\tauthField\"N\n" +
+	"\arole_id\x18\x04 \x01(\tR\x06roleId\"N\n" +
 	"\x12CreateUserResponse\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x0e\n" +
-	"\x02id\x18\x03 \x01(\tR\x02id\"V\n" +
+	"\x02id\x18\x03 \x01(\tR\x02id\"#\n" +
 	"\x11DeleteUserRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x121\n" +
-	"\n" +
-	"auth_field\x18\x02 \x01(\v2\x12.auth.v1.AuthFieldR\tauthField\"&\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"&\n" +
 	"\x12DeleteUserResponse\x12\x10\n" +
 	"\x03msg\x18\x01 \x01(\tR\x03msg\"8\n" +
 	"\n" +
 	"Permission\x12\x16\n" +
 	"\x06action\x18\x01 \x01(\tR\x06action\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path\"\xb3\x01\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\"\x80\x01\n" +
 	"\x11CreateRoleRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x125\n" +
-	"\vpermissions\x18\x03 \x03(\v2\x13.auth.v1.PermissionR\vpermissions\x121\n" +
-	"\n" +
-	"auth_field\x18\x04 \x01(\v2\x12.auth.v1.AuthFieldR\tauthField\"\x91\x01\n" +
+	"\vpermissions\x18\x03 \x03(\v2\x13.auth.v1.PermissionR\vpermissions\"\x91\x01\n" +
 	"\x12CreateRoleResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x125\n" +
-	"\vpermissions\x18\x04 \x03(\v2\x13.auth.v1.PermissionR\vpermissions\"V\n" +
+	"\vpermissions\x18\x04 \x03(\v2\x13.auth.v1.PermissionR\vpermissions\"#\n" +
 	"\x11DeleteRoleRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x121\n" +
-	"\n" +
-	"auth_field\x18\x02 \x01(\v2\x12.auth.v1.AuthFieldR\tauthField\"&\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"&\n" +
 	"\x12DeleteRoleResponse\x12\x10\n" +
-	"\x03msg\x18\x01 \x01(\tR\x03msg\"X\n" +
+	"\x03msg\x18\x01 \x01(\tR\x03msg\"%\n" +
 	"\x13FindUserByIDRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x121\n" +
-	"\n" +
-	"auth_field\x18\x02 \x01(\v2\x12.auth.v1.AuthFieldR\tauthField\"i\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"i\n" +
 	"\x14FindUserByIDResponse\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x0e\n" +
 	"\x02id\x18\x03 \x01(\tR\x02id\x12\x17\n" +
-	"\arole_id\x18\x04 \x01(\tR\x06roleId\"X\n" +
+	"\arole_id\x18\x04 \x01(\tR\x06roleId\"%\n" +
 	"\x13FindRoleByIDRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x121\n" +
-	"\n" +
-	"auth_field\x18\x02 \x01(\v2\x12.auth.v1.AuthFieldR\tauthField\"\x93\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x93\x01\n" +
 	"\x14FindRoleByIDResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
@@ -1188,61 +1064,54 @@ func file_auth_v1_auth_proto_rawDescGZIP() []byte {
 	return file_auth_v1_auth_proto_rawDescData
 }
 
-var file_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_auth_v1_auth_proto_goTypes = []any{
-	(*AuthField)(nil),            // 0: auth.v1.AuthField
-	(*LoginRequest)(nil),         // 1: auth.v1.LoginRequest
-	(*LoginResponse)(nil),        // 2: auth.v1.LoginResponse
-	(*CreateUserRequest)(nil),    // 3: auth.v1.CreateUserRequest
-	(*CreateUserResponse)(nil),   // 4: auth.v1.CreateUserResponse
-	(*DeleteUserRequest)(nil),    // 5: auth.v1.DeleteUserRequest
-	(*DeleteUserResponse)(nil),   // 6: auth.v1.DeleteUserResponse
-	(*Permission)(nil),           // 7: auth.v1.Permission
-	(*CreateRoleRequest)(nil),    // 8: auth.v1.CreateRoleRequest
-	(*CreateRoleResponse)(nil),   // 9: auth.v1.CreateRoleResponse
-	(*DeleteRoleRequest)(nil),    // 10: auth.v1.DeleteRoleRequest
-	(*DeleteRoleResponse)(nil),   // 11: auth.v1.DeleteRoleResponse
-	(*FindUserByIDRequest)(nil),  // 12: auth.v1.FindUserByIDRequest
-	(*FindUserByIDResponse)(nil), // 13: auth.v1.FindUserByIDResponse
-	(*FindRoleByIDRequest)(nil),  // 14: auth.v1.FindRoleByIDRequest
-	(*FindRoleByIDResponse)(nil), // 15: auth.v1.FindRoleByIDResponse
-	(*Role)(nil),                 // 16: auth.v1.Role
-	(*FindAllRolesRequest)(nil),  // 17: auth.v1.FindAllRolesRequest
-	(*FindAllRolesResponse)(nil), // 18: auth.v1.FindAllRolesResponse
+	(*LoginRequest)(nil),         // 0: auth.v1.LoginRequest
+	(*LoginResponse)(nil),        // 1: auth.v1.LoginResponse
+	(*CreateUserRequest)(nil),    // 2: auth.v1.CreateUserRequest
+	(*CreateUserResponse)(nil),   // 3: auth.v1.CreateUserResponse
+	(*DeleteUserRequest)(nil),    // 4: auth.v1.DeleteUserRequest
+	(*DeleteUserResponse)(nil),   // 5: auth.v1.DeleteUserResponse
+	(*Permission)(nil),           // 6: auth.v1.Permission
+	(*CreateRoleRequest)(nil),    // 7: auth.v1.CreateRoleRequest
+	(*CreateRoleResponse)(nil),   // 8: auth.v1.CreateRoleResponse
+	(*DeleteRoleRequest)(nil),    // 9: auth.v1.DeleteRoleRequest
+	(*DeleteRoleResponse)(nil),   // 10: auth.v1.DeleteRoleResponse
+	(*FindUserByIDRequest)(nil),  // 11: auth.v1.FindUserByIDRequest
+	(*FindUserByIDResponse)(nil), // 12: auth.v1.FindUserByIDResponse
+	(*FindRoleByIDRequest)(nil),  // 13: auth.v1.FindRoleByIDRequest
+	(*FindRoleByIDResponse)(nil), // 14: auth.v1.FindRoleByIDResponse
+	(*Role)(nil),                 // 15: auth.v1.Role
+	(*FindAllRolesRequest)(nil),  // 16: auth.v1.FindAllRolesRequest
+	(*FindAllRolesResponse)(nil), // 17: auth.v1.FindAllRolesResponse
 }
 var file_auth_v1_auth_proto_depIdxs = []int32{
-	0,  // 0: auth.v1.CreateUserRequest.auth_field:type_name -> auth.v1.AuthField
-	0,  // 1: auth.v1.DeleteUserRequest.auth_field:type_name -> auth.v1.AuthField
-	7,  // 2: auth.v1.CreateRoleRequest.permissions:type_name -> auth.v1.Permission
-	0,  // 3: auth.v1.CreateRoleRequest.auth_field:type_name -> auth.v1.AuthField
-	7,  // 4: auth.v1.CreateRoleResponse.permissions:type_name -> auth.v1.Permission
-	0,  // 5: auth.v1.DeleteRoleRequest.auth_field:type_name -> auth.v1.AuthField
-	0,  // 6: auth.v1.FindUserByIDRequest.auth_field:type_name -> auth.v1.AuthField
-	0,  // 7: auth.v1.FindRoleByIDRequest.auth_field:type_name -> auth.v1.AuthField
-	7,  // 8: auth.v1.FindRoleByIDResponse.permissions:type_name -> auth.v1.Permission
-	7,  // 9: auth.v1.Role.permissions:type_name -> auth.v1.Permission
-	16, // 10: auth.v1.FindAllRolesResponse.roles:type_name -> auth.v1.Role
-	1,  // 11: auth.v1.AuthService.Login:input_type -> auth.v1.LoginRequest
-	3,  // 12: auth.v1.AuthService.CreateUser:input_type -> auth.v1.CreateUserRequest
-	5,  // 13: auth.v1.AuthService.DeleteUser:input_type -> auth.v1.DeleteUserRequest
-	8,  // 14: auth.v1.AuthService.CreateRole:input_type -> auth.v1.CreateRoleRequest
-	10, // 15: auth.v1.AuthService.DeleteRole:input_type -> auth.v1.DeleteRoleRequest
-	12, // 16: auth.v1.AuthService.FindUserByID:input_type -> auth.v1.FindUserByIDRequest
-	14, // 17: auth.v1.AuthService.FindRoleByID:input_type -> auth.v1.FindRoleByIDRequest
-	17, // 18: auth.v1.AuthService.FindAllRoles:input_type -> auth.v1.FindAllRolesRequest
-	2,  // 19: auth.v1.AuthService.Login:output_type -> auth.v1.LoginResponse
-	4,  // 20: auth.v1.AuthService.CreateUser:output_type -> auth.v1.CreateUserResponse
-	6,  // 21: auth.v1.AuthService.DeleteUser:output_type -> auth.v1.DeleteUserResponse
-	9,  // 22: auth.v1.AuthService.CreateRole:output_type -> auth.v1.CreateRoleResponse
-	11, // 23: auth.v1.AuthService.DeleteRole:output_type -> auth.v1.DeleteRoleResponse
-	13, // 24: auth.v1.AuthService.FindUserByID:output_type -> auth.v1.FindUserByIDResponse
-	15, // 25: auth.v1.AuthService.FindRoleByID:output_type -> auth.v1.FindRoleByIDResponse
-	18, // 26: auth.v1.AuthService.FindAllRoles:output_type -> auth.v1.FindAllRolesResponse
-	19, // [19:27] is the sub-list for method output_type
-	11, // [11:19] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	6,  // 0: auth.v1.CreateRoleRequest.permissions:type_name -> auth.v1.Permission
+	6,  // 1: auth.v1.CreateRoleResponse.permissions:type_name -> auth.v1.Permission
+	6,  // 2: auth.v1.FindRoleByIDResponse.permissions:type_name -> auth.v1.Permission
+	6,  // 3: auth.v1.Role.permissions:type_name -> auth.v1.Permission
+	15, // 4: auth.v1.FindAllRolesResponse.roles:type_name -> auth.v1.Role
+	0,  // 5: auth.v1.AuthService.Login:input_type -> auth.v1.LoginRequest
+	2,  // 6: auth.v1.AuthService.CreateUser:input_type -> auth.v1.CreateUserRequest
+	4,  // 7: auth.v1.AuthService.DeleteUser:input_type -> auth.v1.DeleteUserRequest
+	7,  // 8: auth.v1.AuthService.CreateRole:input_type -> auth.v1.CreateRoleRequest
+	9,  // 9: auth.v1.AuthService.DeleteRole:input_type -> auth.v1.DeleteRoleRequest
+	11, // 10: auth.v1.AuthService.FindUserByID:input_type -> auth.v1.FindUserByIDRequest
+	13, // 11: auth.v1.AuthService.FindRoleByID:input_type -> auth.v1.FindRoleByIDRequest
+	16, // 12: auth.v1.AuthService.FindAllRoles:input_type -> auth.v1.FindAllRolesRequest
+	1,  // 13: auth.v1.AuthService.Login:output_type -> auth.v1.LoginResponse
+	3,  // 14: auth.v1.AuthService.CreateUser:output_type -> auth.v1.CreateUserResponse
+	5,  // 15: auth.v1.AuthService.DeleteUser:output_type -> auth.v1.DeleteUserResponse
+	8,  // 16: auth.v1.AuthService.CreateRole:output_type -> auth.v1.CreateRoleResponse
+	10, // 17: auth.v1.AuthService.DeleteRole:output_type -> auth.v1.DeleteRoleResponse
+	12, // 18: auth.v1.AuthService.FindUserByID:output_type -> auth.v1.FindUserByIDResponse
+	14, // 19: auth.v1.AuthService.FindRoleByID:output_type -> auth.v1.FindRoleByIDResponse
+	17, // 20: auth.v1.AuthService.FindAllRoles:output_type -> auth.v1.FindAllRolesResponse
+	13, // [13:21] is the sub-list for method output_type
+	5,  // [5:13] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_auth_v1_auth_proto_init() }
@@ -1256,7 +1125,7 @@ func file_auth_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_v1_auth_proto_rawDesc), len(file_auth_v1_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   19,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

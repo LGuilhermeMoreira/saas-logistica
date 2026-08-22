@@ -16,8 +16,8 @@ func NewAuthService(authClient authv1.AuthServiceClient) contract.AuthService {
 	}
 }
 
-func (s *AuthService) Login(email, password string) (string, error) {
-	resp, err := s.authClient.Login(context.Background(), &authv1.LoginRequest{
+func (s *AuthService) Login(ctx context.Context, email, password string) (string, error) {
+	resp, err := s.authClient.Login(ctx, &authv1.LoginRequest{
 		Email:    email,
 		Password: password,
 	})
@@ -27,13 +27,12 @@ func (s *AuthService) Login(email, password string) (string, error) {
 	return resp.AccessToken, nil
 }
 
-func (s *AuthService) CreateUser(name, email, password, roleID string, authField *authv1.AuthField) (*authv1.CreateUserResponse, error) {
-	resp, err := s.authClient.CreateUser(context.Background(), &authv1.CreateUserRequest{
-		Name:      name,
-		Email:     email,
-		Password:  password,
-		RoleId:    roleID,
-		AuthField: authField,
+func (s *AuthService) CreateUser(ctx context.Context, name, email, password, roleID string) (*authv1.CreateUserResponse, error) {
+	resp, err := s.authClient.CreateUser(ctx, &authv1.CreateUserRequest{
+		Name:     name,
+		Email:    email,
+		Password: password,
+		RoleId:   roleID,
 	})
 	if err != nil {
 		return nil, err
@@ -41,10 +40,9 @@ func (s *AuthService) CreateUser(name, email, password, roleID string, authField
 	return resp, nil
 }
 
-func (s *AuthService) DeleteUser(id string, authField *authv1.AuthField) (*authv1.DeleteUserResponse, error) {
-	resp, err := s.authClient.DeleteUser(context.Background(), &authv1.DeleteUserRequest{
-		Id:        id,
-		AuthField: authField,
+func (s *AuthService) DeleteUser(ctx context.Context, id string) (*authv1.DeleteUserResponse, error) {
+	resp, err := s.authClient.DeleteUser(ctx, &authv1.DeleteUserRequest{
+		Id: id,
 	})
 	if err != nil {
 		return nil, err
@@ -52,12 +50,11 @@ func (s *AuthService) DeleteUser(id string, authField *authv1.AuthField) (*authv
 	return resp, nil
 }
 
-func (s *AuthService) CreateRole(name, description string, permissions []*authv1.Permission, authField *authv1.AuthField) (*authv1.CreateRoleResponse, error) {
-	resp, err := s.authClient.CreateRole(context.Background(), &authv1.CreateRoleRequest{
+func (s *AuthService) CreateRole(ctx context.Context, name, description string, permissions []*authv1.Permission) (*authv1.CreateRoleResponse, error) {
+	resp, err := s.authClient.CreateRole(ctx, &authv1.CreateRoleRequest{
 		Name:        name,
 		Description: description,
 		Permissions: permissions,
-		AuthField:   authField,
 	})
 	if err != nil {
 		return nil, err
@@ -65,11 +62,38 @@ func (s *AuthService) CreateRole(name, description string, permissions []*authv1
 	return resp, nil
 }
 
-func (s *AuthService) DeleteRole(id string, authField *authv1.AuthField) (*authv1.DeleteRoleResponse, error) {
-	resp, err := s.authClient.DeleteRole(context.Background(), &authv1.DeleteRoleRequest{
-		Id:        id,
-		AuthField: authField,
+func (s *AuthService) DeleteRole(ctx context.Context, id string) (*authv1.DeleteRoleResponse, error) {
+	resp, err := s.authClient.DeleteRole(ctx, &authv1.DeleteRoleRequest{
+		Id: id,
 	})
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (s *AuthService) FindUserByID(ctx context.Context, id string) (*authv1.FindUserByIDResponse, error) {
+	resp, err := s.authClient.FindUserByID(ctx, &authv1.FindUserByIDRequest{
+		Id: id,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (s *AuthService) FindRoleByID(ctx context.Context, id string) (*authv1.FindRoleByIDResponse, error) {
+	resp, err := s.authClient.FindRoleByID(ctx, &authv1.FindRoleByIDRequest{
+		Id: id,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (s *AuthService) FindAllRoles(ctx context.Context) (*authv1.FindAllRolesResponse, error) {
+	resp, err := s.authClient.FindAllRoles(ctx, &authv1.FindAllRolesRequest{})
 	if err != nil {
 		return nil, err
 	}

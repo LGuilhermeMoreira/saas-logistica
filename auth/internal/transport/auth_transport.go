@@ -3,10 +3,9 @@ package transport
 import (
 	"auth/internal/application/input"
 	"auth/internal/application/usecase"
-	"auth/pkg/authentication"
-	"auth/pkg/authorization"
+	"auth/pkg/logger"
 	"context"
-	"fmt"
+	"log/slog"
 	authv1 "proto/gen/auth/v1"
 )
 
@@ -14,75 +13,40 @@ type AuthTransport struct {
 	authv1.UnimplementedAuthServiceServer
 	uuc usecase.UserUsecaseInterface
 	ruc usecase.RoleUsecaseInterface
-	jwt authentication.TokenValidator
-	opa authorization.OPAInterface
+	log *slog.Logger
 }
 
 func NewAuthTransport(
 	userUsecase usecase.UserUsecaseInterface,
 	roleUsecase usecase.RoleUsecaseInterface,
-	tokenValidator authentication.TokenValidator,
-	opa authorization.OPAInterface,
+	logger *slog.Logger,
 ) *AuthTransport {
 	return &AuthTransport{
 		uuc: userUsecase,
 		ruc: roleUsecase,
-		jwt: tokenValidator,
-		opa: opa,
+		log: logger,
 	}
-}
-
-func (a *AuthTransport) validateCredentials(token, action, path string) error {
-	if err := a.jwt.Validate(token); err != nil {
-		return err
-	}
-
-	claims, err := a.jwt.ExtractClaims(token)
-	if err != nil {
-		return err
-	}
-
-	data, ok := claims["data"].(map[string]any)
-	if !ok {
-		return fmt.Errorf("jwt: claim 'data' inválida")
-	}
-
-	role, ok := data["role_name"].(string)
-	if !ok {
-		return fmt.Errorf("jwt: claim 'role_name' inválida")
-	}
-
-	opaInput := authorization.OPAInput{
-		Action: action,
-		Path:   path,
-	}
-	opaInput.User.Role = role
-
-	if err := a.opa.Validate(opaInput); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (u *AuthTransport) Login(ctx context.Context, req *authv1.LoginRequest) (*authv1.LoginResponse, error) {
-	login, err := u.uuc.Login(ctx, input.LoginInput{Email: req.Email, Password: req.Password})
+	reqID := logger.ExtractRequestID(ctx)
+	u.log.Info("processing login request", slog.String("request_id", reqID), slog.String("email", req.Email))
 
+	login, err := u.uuc.Login(ctx, input.LoginInput{Email: req.Email, Password: req.Password})
 	if err != nil {
+		u.log.Error("login failed", slog.String("request_id", reqID), slog.String("email", req.Email), slog.Any("error", err))
 		return nil, err
 	}
 
+	u.log.Info("login successful", slog.String("request_id", reqID), slog.String("email", req.Email))
 	return &authv1.LoginResponse{
 		AccessToken: login.Token,
 	}, nil
-
 }
 
 func (u *AuthTransport) CreateUser(ctx context.Context, req *authv1.CreateUserRequest) (*authv1.CreateUserResponse, error) {
-	err := u.validateCredentials(req.AuthField.Token, req.AuthField.Action, req.AuthField.Path)
-	if err != nil {
-		return nil, err
-	}
+	reqID := logger.ExtractRequestID(ctx)
+	u.log.Info("processing create user request", slog.String("request_id", reqID), slog.String("email", req.Email))
 
 	result, err := u.uuc.Create(ctx, input.CreateUserInput{
 		Name:     req.Name,
@@ -90,11 +54,12 @@ func (u *AuthTransport) CreateUser(ctx context.Context, req *authv1.CreateUserRe
 		Email:    req.Email,
 		RoleID:   req.RoleId,
 	})
-
 	if err != nil {
+		u.log.Error("failed to create user", slog.String("request_id", reqID), slog.String("email", req.Email), slog.Any("error", err))
 		return nil, err
 	}
 
+	u.log.Info("user created successfully", slog.String("request_id", reqID), slog.String("user_id", result.ID.String()))
 	return &authv1.CreateUserResponse{
 		Id:    result.ID.String(),
 		Name:  result.Name,
@@ -103,30 +68,26 @@ func (u *AuthTransport) CreateUser(ctx context.Context, req *authv1.CreateUserRe
 }
 
 func (u *AuthTransport) DeleteUser(ctx context.Context, req *authv1.DeleteUserRequest) (*authv1.DeleteUserResponse, error) {
-	err := u.validateCredentials(req.AuthField.Token, req.AuthField.Action, req.AuthField.Path)
+	reqID := logger.ExtractRequestID(ctx)
+	u.log.Info("processing delete user request", slog.String("request_id", reqID), slog.String("user_id", req.Id))
+
+	err := u.uuc.Delete(ctx, input.DeleteUserInput{ID: req.Id})
 	if err != nil {
+		u.log.Error("failed to delete user", slog.String("request_id", reqID), slog.String("user_id", req.Id), slog.Any("error", err))
 		return nil, err
 	}
 
-	err = u.uuc.Delete(ctx, input.DeleteUserInput{ID: req.Id})
-
-	if err != nil {
-		return nil, err
-	}
-
+	u.log.Info("user deleted successfully", slog.String("request_id", reqID), slog.String("user_id", req.Id))
 	return &authv1.DeleteUserResponse{
 		Msg: "OK",
 	}, nil
 }
 
 func (u *AuthTransport) CreateRole(ctx context.Context, req *authv1.CreateRoleRequest) (*authv1.CreateRoleResponse, error) {
-	err := u.validateCredentials(req.AuthField.Token, req.AuthField.Action, req.AuthField.Path)
-	if err != nil {
-		return nil, err
-	}
+	reqID := logger.ExtractRequestID(ctx)
+	u.log.Info("processing create role request", slog.String("request_id", reqID), slog.String("role_name", req.Name))
 
 	permissions := make([]input.PermissionInput, len(req.Permissions))
-
 	for index, permission := range req.Permissions {
 		permissions[index] = input.PermissionInput{
 			Action: permission.Action,
@@ -136,6 +97,7 @@ func (u *AuthTransport) CreateRole(ctx context.Context, req *authv1.CreateRoleRe
 
 	result, err := u.ruc.Create(ctx, input.CreateRoleInput{Name: req.Name, Description: req.Description, Permissions: permissions})
 	if err != nil {
+		u.log.Error("failed to create role", slog.String("request_id", reqID), slog.String("role_name", req.Name), slog.Any("error", err))
 		return nil, err
 	}
 
@@ -145,7 +107,6 @@ func (u *AuthTransport) CreateRole(ctx context.Context, req *authv1.CreateRoleRe
 	}
 
 	perm := make([]*authv1.Permission, len(result.Permissions))
-
 	for i, v := range result.Permissions {
 		perm[i] = &authv1.Permission{
 			Action: v.Action,
@@ -153,6 +114,7 @@ func (u *AuthTransport) CreateRole(ctx context.Context, req *authv1.CreateRoleRe
 		}
 	}
 
+	u.log.Info("role created successfully", slog.String("request_id", reqID), slog.String("role_id", result.ID.String()))
 	return &authv1.CreateRoleResponse{
 		Id:          result.ID.String(),
 		Name:        result.Name,
@@ -160,33 +122,30 @@ func (u *AuthTransport) CreateRole(ctx context.Context, req *authv1.CreateRoleRe
 		Permissions: perm,
 	}, nil
 }
+
 func (u *AuthTransport) DeleteRole(ctx context.Context, req *authv1.DeleteRoleRequest) (*authv1.DeleteRoleResponse, error) {
-	err := u.validateCredentials(req.AuthField.Token, req.AuthField.Action, req.AuthField.Path)
+	reqID := logger.ExtractRequestID(ctx)
+	u.log.Info("processing delete role request", slog.String("request_id", reqID), slog.String("role_id", req.Id))
+
+	err := u.ruc.Delete(ctx, input.DeleteRoleInput{ID: req.Id})
 	if err != nil {
+		u.log.Error("failed to delete role", slog.String("request_id", reqID), slog.String("role_id", req.Id), slog.Any("error", err))
 		return nil, err
 	}
 
-	err = u.ruc.Delete(ctx, input.DeleteRoleInput{ID: req.Id})
-
-	if err != nil {
-		return nil, err
-	}
-
+	u.log.Info("role deleted successfully", slog.String("request_id", reqID), slog.String("role_id", req.Id))
 	return &authv1.DeleteRoleResponse{
 		Msg: "OK",
 	}, nil
 }
 
 func (u *AuthTransport) FindUserByID(ctx context.Context, req *authv1.FindUserByIDRequest) (*authv1.FindUserByIDResponse, error) {
-	err := u.validateCredentials(req.AuthField.Token, req.AuthField.Action, req.AuthField.Path)
-	if err != nil {
-		return nil, err
-	}
+	reqID := logger.ExtractRequestID(ctx)
+	u.log.Info("processing find user by id request", slog.String("request_id", reqID), slog.String("user_id", req.Id))
 
-	result, err := u.uuc.FindByID(ctx, input.FindByIDUserInput{
-		ID: req.Id,
-	})
+	result, err := u.uuc.FindByID(ctx, input.FindByIDUserInput{ID: req.Id})
 	if err != nil {
+		u.log.Error("failed to find user", slog.String("request_id", reqID), slog.String("user_id", req.Id), slog.Any("error", err))
 		return nil, err
 	}
 
@@ -196,16 +155,15 @@ func (u *AuthTransport) FindUserByID(ctx context.Context, req *authv1.FindUserBy
 		Id:     result.ID.String(),
 		RoleId: result.RoleID.String(),
 	}, nil
-
-	// return nil, status.Error(codes.Unimplemented, "method FindUserByID not implemented")
 }
+
 func (u *AuthTransport) FindRoleByID(ctx context.Context, req *authv1.FindRoleByIDRequest) (*authv1.FindRoleByIDResponse, error) {
-	if err := u.validateCredentials(req.AuthField.Token, req.AuthField.Action, req.AuthField.Path); err != nil {
-		return nil, err
-	}
+	reqID := logger.ExtractRequestID(ctx)
+	u.log.Info("processing find role by id request", slog.String("request_id", reqID), slog.String("role_id", req.Id))
 
 	result, err := u.ruc.FindByID(ctx, input.FindByIDRoleInput{ID: req.Id})
 	if err != nil {
+		u.log.Error("failed to find role", slog.String("request_id", reqID), slog.String("role_id", req.Id), slog.Any("error", err))
 		return nil, err
 	}
 
@@ -215,7 +173,6 @@ func (u *AuthTransport) FindRoleByID(ctx context.Context, req *authv1.FindRoleBy
 	}
 
 	perm := make([]*authv1.Permission, len(result.Permissions))
-
 	for i, v := range result.Permissions {
 		perm[i] = &authv1.Permission{
 			Action: v.Action,
@@ -229,23 +186,21 @@ func (u *AuthTransport) FindRoleByID(ctx context.Context, req *authv1.FindRoleBy
 		Name:        result.Name,
 		Permissions: perm,
 	}, nil
-
 }
 
-func (u *AuthTransport) FindAllRoles(
-	ctx context.Context,
-	req *authv1.FindAllRolesRequest,
-) (*authv1.FindAllRolesResponse, error) {
+func (u *AuthTransport) FindAllRoles(ctx context.Context, req *authv1.FindAllRolesRequest) (*authv1.FindAllRolesResponse, error) {
+	reqID := logger.ExtractRequestID(ctx)
+	u.log.Info("processing find all roles request", slog.String("request_id", reqID))
+
 	result, err := u.ruc.FindAll(ctx)
 	if err != nil {
+		u.log.Error("failed to find all roles", slog.String("request_id", reqID), slog.Any("error", err))
 		return nil, err
 	}
 
 	roles := make([]*authv1.Role, len(result))
-
 	for i, role := range result {
 		permissions := make([]*authv1.Permission, len(role.Permissions))
-
 		for j, permission := range role.Permissions {
 			permissions[j] = &authv1.Permission{
 				Action: permission.Action,

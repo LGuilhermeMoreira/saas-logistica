@@ -3,6 +3,7 @@ package usecase_test
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"testing"
 
 	"github.com/google/uuid"
@@ -65,7 +66,7 @@ func TestUserUsecase_Create(t *testing.T) {
 
 	t.Run("should create a user with success", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
-		uc := usecase.NewUserUsecase(mockRepo, nil)
+		uc := usecase.NewUserUsecase(mockRepo, nil, slog.Default())
 
 		dto := input.CreateUserInput{
 			Name:     "John Doe",
@@ -90,7 +91,7 @@ func TestUserUsecase_Create(t *testing.T) {
 
 	t.Run("should return error when name is empty (Entity Rule)", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
-		uc := usecase.NewUserUsecase(mockRepo, nil)
+		uc := usecase.NewUserUsecase(mockRepo, nil, slog.Default())
 
 		dto := input.CreateUserInput{
 			Name:     "   ",
@@ -109,7 +110,7 @@ func TestUserUsecase_Create(t *testing.T) {
 
 	t.Run("should return error when email is invalid (Entity Rule)", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
-		uc := usecase.NewUserUsecase(mockRepo, nil)
+		uc := usecase.NewUserUsecase(mockRepo, nil, slog.Default())
 
 		dto := input.CreateUserInput{
 			Name:     "John Doe",
@@ -128,7 +129,7 @@ func TestUserUsecase_Create(t *testing.T) {
 
 	t.Run("should return error when password is too short (Entity Rule)", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
-		uc := usecase.NewUserUsecase(mockRepo, nil)
+		uc := usecase.NewUserUsecase(mockRepo, nil, slog.Default())
 
 		dto := input.CreateUserInput{
 			Name:     "John Doe",
@@ -147,7 +148,7 @@ func TestUserUsecase_Create(t *testing.T) {
 
 	t.Run("should return error when repository fails", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
-		uc := usecase.NewUserUsecase(mockRepo, nil)
+		uc := usecase.NewUserUsecase(mockRepo, nil, slog.Default())
 
 		dto := input.CreateUserInput{
 			Name:     "John Doe",
@@ -173,7 +174,7 @@ func TestUserUsecase_Delete(t *testing.T) {
 
 	t.Run("should delete user with success", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
-		uc := usecase.NewUserUsecase(mockRepo, nil)
+		uc := usecase.NewUserUsecase(mockRepo, nil, slog.Default())
 
 		dto := input.DeleteUserInput{ID: validUUID.String()}
 		fakeUser := &entity.User{ID: validUUID}
@@ -189,7 +190,7 @@ func TestUserUsecase_Delete(t *testing.T) {
 
 	t.Run("should return error for invalid uuid", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
-		uc := usecase.NewUserUsecase(mockRepo, nil)
+		uc := usecase.NewUserUsecase(mockRepo, nil, slog.Default())
 
 		dto := input.DeleteUserInput{ID: "invalid-uuid"}
 		err := uc.Delete(ctx, dto)
@@ -201,7 +202,7 @@ func TestUserUsecase_Delete(t *testing.T) {
 
 	t.Run("should return error if user not found", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
-		uc := usecase.NewUserUsecase(mockRepo, nil)
+		uc := usecase.NewUserUsecase(mockRepo, nil, slog.Default())
 
 		dto := input.DeleteUserInput{ID: validUUID.String()}
 		expectedErr := errors.New("not found")
@@ -226,7 +227,7 @@ func TestUserUsecase_Login(t *testing.T) {
 	t.Run("should login and generate token with success", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
 		mockTokenGen := new(MockTokenGenerator)
-		uc := usecase.NewUserUsecase(mockRepo, mockTokenGen)
+		uc := usecase.NewUserUsecase(mockRepo, mockTokenGen, slog.Default())
 
 		dto := input.LoginInput{
 			Email:    validEmail,
@@ -254,7 +255,7 @@ func TestUserUsecase_Login(t *testing.T) {
 	})
 
 	t.Run("should return error for empty credentials", func(t *testing.T) {
-		uc := usecase.NewUserUsecase(nil, nil)
+		uc := usecase.NewUserUsecase(nil, nil, slog.Default())
 
 		dto := input.LoginInput{
 			Email:    "   ",
@@ -270,7 +271,7 @@ func TestUserUsecase_Login(t *testing.T) {
 
 	t.Run("should return error if user not found on repository", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
-		uc := usecase.NewUserUsecase(mockRepo, nil)
+		uc := usecase.NewUserUsecase(mockRepo, nil, slog.Default())
 
 		dto := input.LoginInput{Email: validEmail, Password: validPassword}
 		expectedErr := errors.New("user not found")
@@ -286,7 +287,7 @@ func TestUserUsecase_Login(t *testing.T) {
 
 	t.Run("should return error for wrong password", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
-		uc := usecase.NewUserUsecase(mockRepo, nil)
+		uc := usecase.NewUserUsecase(mockRepo, nil, slog.Default())
 
 		dto := input.LoginInput{Email: validEmail, Password: "wrongpassword"}
 
@@ -306,7 +307,7 @@ func TestUserUsecase_Login(t *testing.T) {
 	t.Run("should return error if token generation fails", func(t *testing.T) {
 		mockRepo := new(MockUserRepository)
 		mockTokenGen := new(MockTokenGenerator)
-		uc := usecase.NewUserUsecase(mockRepo, mockTokenGen)
+		uc := usecase.NewUserUsecase(mockRepo, mockTokenGen, slog.Default())
 
 		dto := input.LoginInput{Email: validEmail, Password: validPassword}
 		fakeUser := &entity.User{

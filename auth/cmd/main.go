@@ -30,13 +30,12 @@ func main() {
 	}
 
 	logger := logger.New(cnfg.LOG_MODE)
-	slog.SetDefault(logger)
 
-	slog.Info("starting application with configurations", slog.String("port", cnfg.PORT), slog.String("log_mode", cnfg.LOG_MODE))
+	logger.Info("starting application with configurations", slog.String("port", cnfg.PORT), slog.String("log_mode", cnfg.LOG_MODE))
 
 	dbConn, err := database.NewPostgresConnection(cnfg.PostgresURI())
 	if err != nil {
-		slog.Error("error connecting to database", slog.String("error", err.Error()))
+		logger.Error("error connecting to database", slog.String("error", err.Error()))
 		panic(err)
 	}
 
@@ -46,36 +45,43 @@ func main() {
 		&entity.User{},
 	)
 	if err != nil {
-		slog.Error("error migrating entities to database", slog.String("error", err.Error()))
+		logger.Error("error migrating entities to database", slog.String("error", err.Error()))
 		panic(err)
 	}
 
 	minioClient, err := s3.NewS3Connection(cnfg)
 	if err != nil {
-		slog.Error("error connecting to minio", slog.String("error", err.Error()))
+		logger.Error("error connecting to minio", slog.String("error", err.Error()))
 		panic(err)
 	}
 
-	authTransport, err := di.InitGRPCAuthTransport(cnfg, dbConn, minioClient)
+	authTransport, err := di.InitGRPCAuthTransport(cnfg, dbConn, minioClient, logger)
 	if err != nil {
-		slog.Error("error initializing GRPC auth transport", slog.String("error", err.Error()))
+		logger.Error("error initializing GRPC auth transport", slog.String("error", err.Error()))
 		panic(err)
+	}
+
+	grpcMiddleware, err := di.InitGRPCMiddleware(cnfg, logger)
+	if err != nil {
+
 	}
 
 	conn, err := net.Listen("tcp", fmt.Sprintf(":%s", cnfg.PORT))
 	if err != nil {
-		slog.Error("error listening to tcp port", slog.String("error", err.Error()))
+		logger.Error("error listening to tcp port", slog.String("error", err.Error()))
 		panic(err)
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(grpcMiddleware.ValidateCredentials()),
+	)
 
 	authv1.RegisterAuthServiceServer(server, authTransport)
 
 	go func() {
-		slog.Info(fmt.Sprintf("gRPC server running on port %s", cnfg.PORT))
+		logger.Info(fmt.Sprintf("gRPC server running on port %s", cnfg.PORT))
 		if err := server.Serve(conn); err != nil {
-			slog.Error("error serving grpc", slog.String("error", err.Error()))
+			logger.Error("error serving grpc", slog.String("error", err.Error()))
 			panic(err)
 		}
 	}()
@@ -83,7 +89,7 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
-	slog.Info("Shutdown signal received. Initiating graceful shutdown...")
+	logger.Info("Shutdown signal received. Initiating graceful shutdown...")
 	server.GracefulStop()
-	slog.Info("Server gracefully stopped.")
+	logger.Info("Server gracefully stopped.")
 }

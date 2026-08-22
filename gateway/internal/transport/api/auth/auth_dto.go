@@ -16,10 +16,11 @@ type CreateUserInput struct {
 	RoleID   string `json:"role_id"`
 }
 
-type CreateUserOutput struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+type UserOutput struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Email  string `json:"email"`
+	RoleID string `json:"role_id"`
 }
 
 type DeleteUserInput struct {
@@ -30,22 +31,22 @@ type DeleteUserOutput struct {
 	Msg string `json:"msg"`
 }
 
-type PermissionInput struct {
+type Permission struct {
 	Action string `json:"action"`
 	Path   string `json:"path"`
 }
 
 type CreateRoleInput struct {
-	Name        string            `json:"name"`
-	Description string            `json:"description"`
-	Permissions []PermissionInput `json:"permissions"`
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	Permissions []Permission `json:"permissions"`
 }
 
-type CreateRoleOutput struct {
-	ID          string            `json:"id"`
-	Name        string            `json:"name"`
-	Description string            `json:"description"`
-	Permissions []PermissionInput `json:"permissions"`
+type RoleOutput struct {
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	Permissions []Permission `json:"permissions"`
 }
 
 type DeleteRoleInput struct {
@@ -54,4 +55,8 @@ type DeleteRoleInput struct {
 
 type DeleteRoleOutput struct {
 	Msg string `json:"msg"`
+}
+
+type FindAllRolesOutput struct {
+	Roles []RoleOutput `json:"roles"`
 }

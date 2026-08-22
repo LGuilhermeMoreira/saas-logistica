@@ -2,32 +2,42 @@ package service
 
 import (
 	"archive/tar"
-	"auth/internal/domain/contract"
 	"bytes"
 	"compress/gzip"
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
+
+	"auth/internal/domain/contract"
+	"auth/pkg/logger"
 )
 
 type OPASyncService struct {
 	repo    contract.RoleRepositoryInterface
 	storage contract.StorageServiceInterface
+	log     *slog.Logger
 }
 
 func NewOPASyncService(
 	repo contract.RoleRepositoryInterface,
 	storage contract.StorageServiceInterface,
+	log *slog.Logger,
 ) contract.OPASyncServiceInterface {
 	return &OPASyncService{
 		repo:    repo,
 		storage: storage,
+		log:     log,
 	}
 }
 
 func (o *OPASyncService) SyncPolicies(ctx context.Context) error {
+	reqID := logger.ExtractRequestID(ctx)
+	o.log.Info("starting OPA policies sync", slog.String("request_id", reqID))
+
 	roles, err := o.repo.FindAll(ctx)
 	if err != nil {
+		o.log.Error("failed to fetch roles for OPA sync", slog.String("request_id", reqID), slog.Any("error", err))
 		return fmt.Errorf("erro ao buscar roles do banco: %w", err)
 	}
 
@@ -37,6 +47,7 @@ func (o *OPASyncService) SyncPolicies(ctx context.Context) error {
 
 	jsonBytes, err := json.Marshal(payload)
 	if err != nil {
+		o.log.Error("failed to marshal roles to json", slog.String("request_id", reqID), slog.Any("error", err))
 		return fmt.Errorf("erro ao encodar roles para json: %w", err)
 	}
 
@@ -52,16 +63,20 @@ func (o *OPASyncService) SyncPolicies(ctx context.Context) error {
 	}
 
 	if err := tw.WriteHeader(hdr); err != nil {
+		o.log.Error("failed to write tar header", slog.String("request_id", reqID), slog.Any("error", err))
 		return fmt.Errorf("erro ao escrever cabeçalho do tar: %w", err)
 	}
 	if _, err := tw.Write(jsonBytes); err != nil {
+		o.log.Error("failed to write tar body", slog.String("request_id", reqID), slog.Any("error", err))
 		return fmt.Errorf("erro ao escrever corpo do tar: %w", err)
 	}
 
 	if err := tw.Close(); err != nil {
+		o.log.Error("failed to close tar writer", slog.String("request_id", reqID), slog.Any("error", err))
 		return fmt.Errorf("erro ao fechar tar writer: %w", err)
 	}
 	if err := gw.Close(); err != nil {
+		o.log.Error("failed to close gzip writer", slog.String("request_id", reqID), slog.Any("error", err))
 		return fmt.Errorf("erro ao fechar gzip writer: %w", err)
 	}
 
@@ -70,10 +85,15 @@ func (o *OPASyncService) SyncPolicies(ctx context.Context) error {
 	reader := bytes.NewReader(buf.Bytes())
 	size := int64(buf.Len())
 
+	o.log.Debug("uploading bundle to storage", slog.String("request_id", reqID), slog.String("filename", filename), slog.Int64("size", size))
+
 	_, _, err = o.storage.UploadFile(ctx, filename, contentType, reader, size)
 	if err != nil {
+		o.log.Error("failed to upload bundle to storage", slog.String("request_id", reqID), slog.Any("error", err))
 		return fmt.Errorf("erro ao fazer upload do bundle para o storage: %w", err)
 	}
+
+	o.log.Info("OPA policies synced and uploaded successfully", slog.String("request_id", reqID), slog.String("filename", filename))
 
 	return nil
 }

@@ -14,26 +14,38 @@ import (
 	"auth/internal/transport"
 	"auth/pkg/authentication"
 	"auth/pkg/authorization"
+	"auth/pkg/grpc_middleware"
 	"github.com/google/wire"
 	"github.com/minio/minio-go/v7"
 	"gorm.io/gorm"
+	"log/slog"
 )
 
 // Injectors from wire.go:
 
-func InitGRPCAuthTransport(env *config.Env, db *gorm.DB, s3Client *minio.Client) (*transport.AuthTransport, error) {
-	userRepositoryInterface := repository.NewUserRepository(db)
+// Adicionei log *slog.Logger nos parâmetros
+func InitGRPCAuthTransport(env *config.Env, db *gorm.DB, s3Client *minio.Client, log *slog.Logger) (*transport.AuthTransport, error) {
+	userRepositoryInterface := repository.NewUserRepository(db, log)
 	jwt := authentication.NewJWT(env)
-	userUsecaseInterface := usecase.NewUserUsecase(userRepositoryInterface, jwt)
-	roleRepositoryInterface := repository.NewRoleRepository(db)
-	storageServiceInterface := service.NewStorageService(s3Client, env)
-	opaSyncServiceInterface := service.NewOPASyncService(roleRepositoryInterface, storageServiceInterface)
-	roleUsecaseInterface := usecase.NewRoleUsecase(roleRepositoryInterface, opaSyncServiceInterface)
-	opaInterface := authorization.NewOPA(env)
-	authTransport := transport.NewAuthTransport(userUsecaseInterface, roleUsecaseInterface, jwt, opaInterface)
+	userUsecaseInterface := usecase.NewUserUsecase(userRepositoryInterface, jwt, log)
+	roleRepositoryInterface := repository.NewRoleRepository(db, log)
+	storageServiceInterface := service.NewStorageService(s3Client, env, log)
+	opaSyncServiceInterface := service.NewOPASyncService(roleRepositoryInterface, storageServiceInterface, log)
+	roleUsecaseInterface := usecase.NewRoleUsecase(roleRepositoryInterface, opaSyncServiceInterface, log)
+	authTransport := transport.NewAuthTransport(userUsecaseInterface, roleUsecaseInterface, log)
 	return authTransport, nil
+}
+
+// Se o seu middleware gRPC também precisar do logger, adicione o parâmetro aqui também!
+func InitGRPCMiddleware(env *config.Env, log *slog.Logger) (*grpcmiddleware.GRPCMiddleware, error) {
+	jwt := authentication.NewJWT(env)
+	opaInterface := authorization.NewOPA(env)
+	grpcMiddleware := grpcmiddleware.NewGRPCMiddleware(jwt, opaInterface)
+	return grpcMiddleware, nil
 }
 
 // wire.go:
 
 var AuthProviderSet = wire.NewSet(authentication.NewJWT, wire.Bind(new(authentication.TokenValidator), new(*authentication.JWT)), wire.Bind(new(authentication.TokenGenerator), new(*authentication.JWT)))
+
+var ValidateCredentialsProviderSet = wire.NewSet(authentication.NewJWT, wire.Bind(new(authentication.TokenValidator), new(*authentication.JWT)))

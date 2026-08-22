@@ -3,6 +3,7 @@ package repository_test
 import (
 	"auth/internal/domain/entity"
 	"auth/internal/infra/repository"
+	"log/slog"
 
 	"context"
 	"testing"
@@ -26,7 +27,7 @@ func setupTestDB(t *testing.T) *gorm.DB {
 
 func TestRoleRepository_Create(t *testing.T) {
 	db := setupTestDB(t)
-	repo := repository.NewRoleRepository(db)
+	repo := repository.NewRoleRepository(db, slog.Default())
 	ctx := context.Background()
 
 	perm, _ := entity.NewPermission("read", "/users")
@@ -46,7 +47,7 @@ func TestRoleRepository_Create(t *testing.T) {
 
 func TestRoleRepository_FindByID(t *testing.T) {
 	db := setupTestDB(t)
-	repo := repository.NewRoleRepository(db)
+	repo := repository.NewRoleRepository(db, slog.Default())
 	ctx := context.Background()
 
 	perm, _ := entity.NewPermission("write", "/posts")
@@ -73,7 +74,7 @@ func TestRoleRepository_FindByID(t *testing.T) {
 
 func TestRoleRepository_FindAll(t *testing.T) {
 	db := setupTestDB(t)
-	repo := repository.NewRoleRepository(db)
+	repo := repository.NewRoleRepository(db, slog.Default())
 	ctx := context.Background()
 
 	db.Exec("DELETE FROM roles")
@@ -94,7 +95,7 @@ func TestRoleRepository_FindAll(t *testing.T) {
 
 func TestRoleRepository_Delete(t *testing.T) {
 	db := setupTestDB(t)
-	repo := repository.NewRoleRepository(db)
+	repo := repository.NewRoleRepository(db, slog.Default())
 	ctx := context.Background()
 
 	perm, _ := entity.NewPermission("delete", "/all")

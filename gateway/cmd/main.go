@@ -6,6 +6,9 @@ import (
 	"gateway/config"
 	"gateway/internal/infra/service"
 	"gateway/internal/transport/api/auth"
+	"gateway/internal/transport/middleware"
+	"gateway/pkg/authentication"
+	"gateway/pkg/authorization"
 	"gateway/pkg/logger"
 	"log/slog"
 	"net/http"
@@ -42,15 +45,27 @@ func main() {
 	authService := service.NewAuthService(authClient)
 	authController := auth.NewAuthController(authService)
 
+	jwt := authentication.NewJWT(cnfg)
+	opa := authorization.NewOPA(cnfg)
+
 	mux := gin.New()
+
+	mux.Use(middleware.Logger())
+	mux.Use(middleware.ExtractRequestValues())
+
 	mux.POST("auth/login", authController.Login)
+
 	authGroup := mux.Group("/auth")
+	authGroup.Use(middleware.ValidateAuthentication(jwt))
+	authGroup.Use(middleware.ValidateAuthorization(opa, jwt))
 	{
 		authGroup.POST("/create-user", authController.CreateUser)
 		authGroup.POST("/create-role", authController.CreateRole)
 		authGroup.DELETE("/delete-user/:id", authController.DeleteUser)
 		authGroup.DELETE("/delete-role/:id", authController.DeleteRole)
-
+		authGroup.GET("/find-role/:id", authController.FindRoleByID)
+		authGroup.GET("/find-user/:id", authController.FindUserByID)
+		authGroup.GET("/find-all-roles", authController.FindAllRoles)
 	}
 
 	server := &http.Server{

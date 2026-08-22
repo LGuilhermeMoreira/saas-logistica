@@ -5,6 +5,7 @@ import (
 	"auth/internal/infra/service"
 	"bytes"
 	"context"
+	"log/slog"
 	"testing"
 	"time"
 
@@ -63,7 +64,7 @@ func TestStorageService(t *testing.T) {
 	client, env, cleanup := setupMinioContainer(t)
 	defer cleanup()
 
-	svc := service.NewStorageService(client, env)
+	svc := service.NewStorageService(client, env, slog.Default())
 	ctx := context.Background()
 
 	t.Run("success uploading file", func(t *testing.T) {
