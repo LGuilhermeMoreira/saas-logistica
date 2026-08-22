@@ -10,6 +10,7 @@ import (
 	"gateway/pkg/authentication"
 	"gateway/pkg/authorization"
 	"gateway/pkg/logger"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -30,23 +31,28 @@ func main() {
 	cnfg := config.NewENV()
 
 	logger := logger.New(cnfg.LOG_MODE)
-	slog.SetDefault(logger)
+	// slog.SetDefault(logger)
 
-	slog.Info("starting gateway application", slog.String("port", cnfg.PORT), slog.String("log_mode", cnfg.LOG_MODE))
+	logger.Info("starting gateway application", slog.String("port", cnfg.PORT), slog.String("log_mode", cnfg.LOG_MODE))
 
 	authConn, err := grpc.NewClient(cnfg.AUTH_BASE_URL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		slog.Error("failed to connect to auth service", "error", err)
+		logger.Error("failed to connect to auth service", "error", err)
 		panic(err)
 	}
 	defer authConn.Close()
 
 	authClient := authv1.NewAuthServiceClient(authConn)
 	authService := service.NewAuthService(authClient)
-	authController := auth.NewAuthController(authService)
+	authController := auth.NewAuthController(authService, logger)
 
 	jwt := authentication.NewJWT(cnfg)
 	opa := authorization.NewOPA(cnfg)
+
+	gin.SetMode(gin.ReleaseMode)
+
+	gin.DefaultWriter = io.Discard
+	gin.DefaultErrorWriter = io.Discard
 
 	mux := gin.New()
 
@@ -74,9 +80,9 @@ func main() {
 	}
 
 	go func() {
-		slog.Info("gateway server is listening", slog.String("port", cnfg.PORT))
+		logger.Info("gateway server is listening", slog.String("port", cnfg.PORT))
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			slog.Error("gateway server failed", "error", err)
+			logger.Error("gateway server failed", "error", err)
 			panic(err)
 		}
 	}()
@@ -84,15 +90,15 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
-	slog.Info("shutdown signal received, shutting down gateway server...")
+	logger.Info("shutdown signal received, shutting down gateway server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		slog.Error("gateway server shutdown failed", "error", err)
+		logger.Error("gateway server shutdown failed", "error", err)
 		panic(err)
 	}
 
-	slog.Info("gateway server gracefully stopped")
+	logger.Info("gateway server gracefully stopped")
 }
