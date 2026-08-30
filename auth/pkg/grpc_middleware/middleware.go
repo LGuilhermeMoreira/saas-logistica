@@ -3,6 +3,7 @@ package grpcmiddleware
 import (
 	"auth/pkg/authentication"
 	"auth/pkg/authorization"
+	"auth/pkg/logger"
 	"context"
 	"log/slog"
 	"strings"
@@ -90,6 +91,7 @@ func (g *GRPCMiddleware) ValidateCredentials() grpc.UnaryServerInterceptor {
 			)
 			return nil, status.Error(codes.PermissionDenied, "access denied by OPA")
 		}
+		ctx = context.WithValue(ctx, logger.RequestIDKey, reqID)
 
 		return handler(ctx, req)
 	}

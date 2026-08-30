@@ -10,7 +10,7 @@ services:
       PORT: 8080
       LOG_MODE: prod
       AUTH_BASE_URL: "dns:///auth:50051"
-      OPA_ADDRESS: "http://gateway_opa:8181/v1/data/authz/allow"
+      OPA_ADDRESS: "http://gateway_opa:8181/v1/data/authz"
       JWT_SECRET: "your_jwt_secret"
       JWT_TTL: "8h"
     depends_on:
@@ -24,12 +24,14 @@ services:
       context: ../
       dockerfile: policies/Dockerfile
     container_name: gateway_opa
+    environment:
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_REGION: us-east-1
     ports:
       - "8182:8181"
     volumes:
       - ../policies:/app/policies
-      - ../policies/config.yaml:/app/config.yaml
-    command: ["run", "--server", "--config-file=/app/config.yaml", "/app/policies/"]
     networks:
       - app-network
 
@@ -93,12 +95,14 @@ services:
       context: ../
       dockerfile: policies/Dockerfile
     container_name: auth_opa
+    environment:
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_REGION: us-east-1
     ports:
       - "8183:8181"
     volumes:
       - ../policies:/app/policies
-      - ../policies/config.yaml:/app/config.yaml
-    command: ["run", "--server", "--config-file=/app/config.yaml", "/app/policies/"]
     networks:
       - app-network
 
@@ -114,7 +118,7 @@ services:
       LOG_MODE: prod
       JWT_SECRET: "your_jwt_secret"
       JWT_TTL: "8h"
-      OPA_ADDRESS: "http://auth_opa:8181/v1/data/authz/allow"
+      OPA_ADDRESS: "http://auth_opa:8181/v1/data/authz"
       DATABASE_NAME: your_db_name
       DATABASE_USER: your_user
       DATABASE_PASSWORD: your_password

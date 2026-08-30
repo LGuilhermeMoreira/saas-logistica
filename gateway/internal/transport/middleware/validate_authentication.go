@@ -2,23 +2,37 @@ package middleware
 
 import (
 	"gateway/pkg/authentication"
+	"log/slog"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-func ValidateAuthentication(validator authentication.TokenValidator) gin.HandlerFunc {
+func ValidateAuthentication(validator authentication.TokenValidator, log *slog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		reqID := ctx.Writer.Header().Get("X-Request-ID")
+		if reqID == "" {
+			reqID = ctx.GetHeader("X-Request-ID")
+		}
+
+		logger := log.With("request_id", reqID)
+
 		token := extractToken(ctx.GetHeader("Authorization"))
-
-		err := validator.Validate(token)
-		ctx.Set("token", token)
-
-		if err != nil {
+		if token == "" {
+			logger.Error("authorization token is missing or empty")
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
+
+		err := validator.Validate(token)
+		if err != nil {
+			logger.Error("failed to validate token", "error", err.Error())
+			ctx.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		ctx.Set("token", token)
 
 		ctx.Next()
 	}

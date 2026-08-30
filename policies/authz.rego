@@ -4,7 +4,7 @@ package authz
 default allow = false
 
 # admin
-allow {
+allow if {
     role := data.roles[_]
     role.name == input.user.role
     
@@ -14,7 +14,7 @@ allow {
 }
 
 # resto dos cargos
-allow {
+allow if {
     role := data.roles[_]
     role.name == input.user.role
     

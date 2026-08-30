@@ -51,10 +51,36 @@ func (o *OPASyncService) SyncPolicies(ctx context.Context) error {
 		return fmt.Errorf("erro ao encodar roles para json: %w", err)
 	}
 
+	// NOVO: manifest restringindo o bundle a só possuir "roles",
+	// deixando o authz.rego local intocado.
+	manifest := map[string]any{
+		"roots": []string{"roles"},
+	}
+	manifestBytes, err := json.Marshal(manifest)
+	if err != nil {
+		o.log.Error("failed to marshal bundle manifest", slog.String("request_id", reqID), slog.Any("error", err))
+		return fmt.Errorf("erro ao encodar manifest do bundle: %w", err)
+	}
+
 	var buf bytes.Buffer
 
 	gw := gzip.NewWriter(&buf)
 	tw := tar.NewWriter(gw)
+
+	// NOVO: escreve o .manifest no tar
+	manifestHdr := &tar.Header{
+		Name: ".manifest",
+		Mode: 0600,
+		Size: int64(len(manifestBytes)),
+	}
+	if err := tw.WriteHeader(manifestHdr); err != nil {
+		o.log.Error("failed to write manifest tar header", slog.String("request_id", reqID), slog.Any("error", err))
+		return fmt.Errorf("erro ao escrever cabeçalho do manifest: %w", err)
+	}
+	if _, err := tw.Write(manifestBytes); err != nil {
+		o.log.Error("failed to write manifest tar body", slog.String("request_id", reqID), slog.Any("error", err))
+		return fmt.Errorf("erro ao escrever corpo do manifest: %w", err)
+	}
 
 	hdr := &tar.Header{
 		Name: "data.json",

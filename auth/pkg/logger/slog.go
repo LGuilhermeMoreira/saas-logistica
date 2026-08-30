@@ -34,7 +34,7 @@ func New(logMode string) *slog.Logger {
 
 type contextKey string
 
-const RequestIDKey contextKey = "request_id"
+const RequestIDKey contextKey = "x-request-id"
 
 func ExtractRequestID(ctx context.Context) string {
 	if reqID, ok := ctx.Value(RequestIDKey).(string); ok && reqID != "" {

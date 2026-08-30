@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Logger() gin.HandlerFunc {
+func Logger(log *slog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		start := time.Now()
 
@@ -28,7 +28,7 @@ func Logger() gin.HandlerFunc {
 		if len(ctx.Errors) > 0 {
 			args = append(args, "error", ctx.Errors.String())
 
-			slog.Error(
+			log.Error(
 				"http request",
 				args...,
 			)
@@ -36,7 +36,7 @@ func Logger() gin.HandlerFunc {
 			return
 		}
 
-		slog.Info(
+		log.Info(
 			"http request",
 			args...,
 		)

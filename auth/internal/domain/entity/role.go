@@ -12,7 +12,7 @@ import (
 type Role struct {
 	gorm.Model
 	ID          uuid.UUID `gorm:"primaryKey"`
-	Name        string    `gorm:"uniqueIndex;not null"`
+	Name        string    `gorm:"uniqueIndex;not null" json:"name"`
 	Description *string
 	Permissions []Permission `gorm:"foreignKey:RoleID;constraint:OnDelete:CASCADE;" json:"permissions"`
 }

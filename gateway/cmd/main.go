@@ -56,14 +56,14 @@ func main() {
 
 	mux := gin.New()
 
-	mux.Use(middleware.Logger())
+	mux.Use(middleware.Logger(logger))
 	mux.Use(middleware.ExtractRequestValues())
 
 	mux.POST("auth/login", authController.Login)
 
 	authGroup := mux.Group("/auth")
-	authGroup.Use(middleware.ValidateAuthentication(jwt))
-	authGroup.Use(middleware.ValidateAuthorization(opa, jwt))
+	authGroup.Use(middleware.ValidateAuthentication(jwt, logger))
+	authGroup.Use(middleware.ValidateAuthorization(opa, jwt, logger))
 	{
 		authGroup.POST("/create-user", authController.CreateUser)
 		authGroup.POST("/create-role", authController.CreateRole)

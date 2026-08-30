@@ -2,6 +2,9 @@ POST http://localhost:8080/auth/login HTTP/1.1
 content-type: application/json
 
 {
-    "email": "leite@email.com",
-    "password": "123321222"
+    "email": "test@test.com",
+    "password": "123321"
 }
+
+
+# eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImNyZWF0ZWRfYXQiOiIyMDI2LTA4LTIyVDE5OjEzOjQ4LjQ0Njg3M1oiLCJkZWxldGVkX2F0IjpudWxsLCJlbWFpbCI6Im1haWxAdGVzdC5jb20iLCJpZCI6IjAxYTAyYWU0LWJiNzAtNzZhYy1hMDA3LWUyOGJhMmRjOTlhMiIsIm5hbWUiOiJndWlndWkiLCJyb2xlX2lkIjoiMDFhMDE4MGYtYzQzNS03OTM2LWFjY2EtZGY0MTM3YTFmMDFkIiwicm9sZV9uYW1lIjoiYWRtaW4iLCJ1cGRhdGVkX2F0IjoiMjAyNi0wOC0yMlQxOToxMzo0OC40NDY4NzNaIn0sImV4cCI6MTc4NzQ1NDg2NCwiaWF0IjoxNzg3NDI2MDY0fQ.HBTW5DrRwF2xS-ntJP44gILqBybETWDfyFPMCgMY9oY
