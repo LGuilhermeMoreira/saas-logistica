@@ -142,7 +142,7 @@ Por possuir alto volume de escrita:
 
 ---
 
-## API Gateway (Opcional)
+## API Gateway 
 
 Um API Gateway pode atuar como ponto único de entrada.
 

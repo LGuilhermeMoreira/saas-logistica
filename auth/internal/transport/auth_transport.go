@@ -61,9 +61,10 @@ func (u *AuthTransport) CreateUser(ctx context.Context, req *authv1.CreateUserRe
 
 	u.log.Info("user created successfully", slog.String("request_id", reqID), slog.String("user_id", result.ID.String()))
 	return &authv1.CreateUserResponse{
-		Id:    result.ID.String(),
-		Name:  result.Name,
-		Email: result.Email,
+		Id:     result.ID.String(),
+		Name:   result.Name,
+		Email:  result.Email,
+		RoleId: result.RoleID.String(),
 	}, nil
 }
 

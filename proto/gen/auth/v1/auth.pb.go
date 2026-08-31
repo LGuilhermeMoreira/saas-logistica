@@ -191,6 +191,7 @@ type CreateUserResponse struct {
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	Id            string                 `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
+	RoleId        string                 `protobuf:"bytes,4,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -242,6 +243,13 @@ func (x *CreateUserResponse) GetEmail() string {
 func (x *CreateUserResponse) GetId() string {
 	if x != nil {
 		return x.Id
+	}
+	return ""
+}
+
+func (x *CreateUserResponse) GetRoleId() string {
+	if x != nil {
+		return x.RoleId
 	}
 	return ""
 }
@@ -990,11 +998,12 @@ const file_auth_v1_auth_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpassword\x12\x17\n" +
-	"\arole_id\x18\x04 \x01(\tR\x06roleId\"N\n" +
+	"\arole_id\x18\x04 \x01(\tR\x06roleId\"g\n" +
 	"\x12CreateUserResponse\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x0e\n" +
-	"\x02id\x18\x03 \x01(\tR\x02id\"#\n" +
+	"\x02id\x18\x03 \x01(\tR\x02id\x12\x17\n" +
+	"\arole_id\x18\x04 \x01(\tR\x06roleId\"#\n" +
 	"\x11DeleteUserRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"&\n" +
 	"\x12DeleteUserResponse\x12\x10\n" +

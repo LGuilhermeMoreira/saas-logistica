@@ -28,6 +28,7 @@ message CreateUserResponse{
 string name = 1;
 string email = 2;
 string id = 3;
+string role_id = 4;
 }
 
 // Deletar usuario
