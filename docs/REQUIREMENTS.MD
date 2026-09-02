@@ -12,10 +12,12 @@ O sistema tem como objetivo gerenciar entregas, rastreamento de motoristas e fat
 
 
 ### Módulo de Entregas
-*   **RF-01 – Criar Entrega:** O sistema deve permitir que um cliente cadastre uma nova entrega informando:
+*   **RF-01 – Criar Entrega:** O sistema deve permitir que um cliente cadastre uma nova entrega informando obrigatoriamente:
     *   Endereço de origem;
     *   Endereço de destino;
     *   Peso do pacote.
+
+Opcionalmente, a entrega poderá conter metadados adicionais.
 *   **RF-02 – Atribuir Motorista:** O sistema deve permitir associar uma entrega a um motorista específico.
 *   **RF-03 – Atualizar Status da Entrega:** O motorista deve poder atualizar o status da entrega seguindo o fluxo:
     *   `CRIADA` → `EM_TRANSITO` → `CONCLUIDA` ou `FALHA`.
