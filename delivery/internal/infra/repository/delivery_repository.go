@@ -71,7 +71,7 @@ func (d *DeliveryRepository) FindByID(ctx context.Context, ID uuid.UUID) (*entit
 	coll := d.db.Collection("deliveries")
 
 	filter := bson.M{
-		"_id": ID.String(),
+		"_id": ID,
 	}
 
 	var model entity.Delivery
@@ -86,4 +86,28 @@ func (d *DeliveryRepository) FindByID(ctx context.Context, ID uuid.UUID) (*entit
 	}
 
 	return &model, nil
+}
+
+func (d *DeliveryRepository) FindUnassociatedDeliveries(ctx context.Context) ([]entity.Delivery, error) {
+	coll := d.db.Collection("deliveries")
+
+	filter := bson.M{
+		"status":    entity.DeliveryStatusCreated,
+		"driver_id": bson.M{"$exists": false},
+	}
+
+	cursor, err := coll.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []entity.Delivery
+
+	if err := cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+
+	return results, nil
 }
