@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package delivery.v1;
+
+import "google/protobuf/struct.proto";
+
+option go_package = "proto/gen/delivery/v1;deliveryv1";
+
+// DeliveryStatus enum representing the status of a delivery
+enum DeliveryStatus {
+  DELIVERY_STATUS_UNSPECIFIED = 0;
+  DELIVERY_STATUS_CREATED = 1;
+  DELIVERY_STATUS_IN_TRANSIT = 2;
+  DELIVERY_STATUS_DELIVERED = 3;
+  DELIVERY_STATUS_CANCELLED = 4;
+}
+
+// Address message representing a delivery address
+message Address {
+  string id = 1;
+  string street = 2;
+  string number = 3;
+  string neighborhood = 4;
+  string city = 5;
+  string zip_code = 6;
+}
+
+// Delivery message representing a delivery order
+message Delivery {
+  string id = 1;
+  Address to = 2;
+  Address from = 3;
+  float weight = 4;
+  google.protobuf.Struct metadata = 5;
+  string client_id = 6;
+  string driver_id = 7;
+  DeliveryStatus status = 8;
+}
+
+// CreateDeliveryRequest message for creating a new delivery
+message CreateDeliveryRequest {
+  Address to = 1;
+  Address from = 2;
+  float weight = 3;
+  string client_id = 4;
+  google.protobuf.Struct metadata = 5;
+}
+
+// FindByIDRequest message for finding a delivery by its ID
+message FindByIDRequest {
+  string id = 1;
+}
+
+// AssignToDriverRequest message for assigning a delivery to a driver
+message AssignToDriverRequest {
+  string delivery_id = 1;
+  string driver_id = 2;
+}
+
+// CreateDeliveryResponse message for create delivery response
+message CreateDeliveryResponse {
+  Delivery delivery = 1;
+}
+
+// FindByIDResponse message for find by ID response
+message FindByIDResponse {
+  Delivery delivery = 1;
+}
+
+// AssignToDriverResponse message for assign to driver response
+message AssignToDriverResponse {
+  Delivery delivery = 1;
+}
+
+// FindUnassociatedRequest message for finding unassociated deliveries
+message FindUnassociatedRequest {}
+
+// FindUnassociatedResponse message for listing unassociated deliveries
+message FindUnassociatedResponse {
+  repeated Delivery deliveries = 1;
+}
+
+// DeliveryService defines the gRPC service for delivery operations
+service DeliveryService {
+  // CreateDelivery creates a new delivery order
+  rpc CreateDelivery(CreateDeliveryRequest) returns (CreateDeliveryResponse) {}
+  
+  // FindByID retrieves a delivery by its ID
+  rpc FindByID(FindByIDRequest) returns (FindByIDResponse) {}
+  
+  // AssignToDriver assigns a delivery to a driver
+  rpc AssignToDriver(AssignToDriverRequest) returns (AssignToDriverResponse) {}
+  
+  // FindUnassociated retrieves all unassociated deliveries
+  rpc FindUnassociated(FindUnassociatedRequest) returns (FindUnassociatedResponse) {}
+}
