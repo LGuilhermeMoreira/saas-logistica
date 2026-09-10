@@ -2,6 +2,7 @@ package repository_test
 
 import (
 	"context"
+	"io"
 	"log/slog"
 	"testing"
 	"time"
@@ -55,7 +56,7 @@ func newRepository(t *testing.T) (*mongo.Database, *repository.DeliveryRepositor
 
 	db := setupMongo(t)
 
-	log := slog.New(slog.NewTextHandler(nil, nil))
+	log := slog.New(slog.NewTextHandler(io.Discard, nil))
 
 	repo := repository.NewDeliveryRepository(db, log)
 

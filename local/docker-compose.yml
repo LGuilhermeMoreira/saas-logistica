@@ -143,6 +143,62 @@ services:
     networks:
       - app-network
 
+  delivery_mongo:
+    image: mongo:latest
+    container_name: delivery_mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongodb_password
+      MONGO_INITDB_DATABASE: delivery_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  delivery_opa:
+    build:
+      context: ../
+      dockerfile: policies/Dockerfile
+    container_name: delivery_opa
+    environment:
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_REGION: us-east-1
+    ports:
+      - "8184:8181"
+    volumes:
+      - ../policies:/app/policies
+    networks:
+      - app-network
+
+  delivery:
+    build:
+      context: ../
+      dockerfile: delivery/Dockerfile
+    container_name: delivery
+    ports:
+      - "50052:50051"
+    environment:
+      PORT: 50051
+      LOG_MODE: prod
+      OPA_ADDRESS: "http://delivery_opa:8181/v1/data/authz"
+      MONGODB_URI: "mongodb://root:mongodb_password@delivery_mongo:27017/delivery_db?authSource=admin"
+      MONGODB_DATABASE: delivery_db
+    depends_on:
+      delivery_mongo:
+        condition: service_healthy
+      delivery_opa:
+        condition: service_started
+    networks:
+      - app-network
+
   loki:
     image: grafana/loki:latest
     container_name: loki
@@ -183,6 +239,7 @@ services:
 volumes:
   postgres_data:
   minio_data:
+  mongo_data:
 
 networks:
   app-network:

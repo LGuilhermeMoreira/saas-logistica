@@ -3,6 +3,8 @@ package usecase_test
 import (
 	"context"
 	"errors"
+	"log/slog"
+	"os"
 	"testing"
 
 	"delivery/internal/application/input"
@@ -43,6 +45,13 @@ func (m *MockDeliveryRepository) FindUnassociatedDeliveries(ctx context.Context)
 		return nil, args.Error(1)
 	}
 	return args.Get(0).([]entity.Delivery), args.Error(1)
+}
+
+func getTestLogger() *slog.Logger {
+	return slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level:     slog.LevelDebug,
+		AddSource: true,
+	}))
 }
 
 func newDelivery(t *testing.T) *entity.Delivery {
@@ -98,7 +107,7 @@ func TestDeliveryUsecase_FindByID(t *testing.T) {
 	repository := new(MockDeliveryRepository)
 	repository.On("FindByID", ctx, delivery.ID).Return(delivery, nil)
 
-	result, err := usecase.NewDeliveryUsecase(repository).FindByID(ctx, input.FindByIDDeliveryInput{ID: delivery.ID.String()})
+	result, err := usecase.NewDeliveryUsecase(repository, getTestLogger()).FindByID(ctx, input.FindByIDDeliveryInput{ID: delivery.ID.String()})
 
 	require.NoError(t, err)
 	require.NotNil(t, result)
@@ -114,7 +123,7 @@ func TestDeliveryUsecase_FindByID(t *testing.T) {
 func TestDeliveryUsecase_FindByID_InvalidID(t *testing.T) {
 	repository := new(MockDeliveryRepository)
 
-	result, err := usecase.NewDeliveryUsecase(repository).FindByID(context.Background(), input.FindByIDDeliveryInput{ID: "invalid-id"})
+	result, err := usecase.NewDeliveryUsecase(repository, getTestLogger()).FindByID(context.Background(), input.FindByIDDeliveryInput{ID: "invalid-id"})
 
 	assert.Error(t, err)
 	assert.Nil(t, result)
@@ -131,7 +140,7 @@ func TestDeliveryUsecase_AssignToDriver(t *testing.T) {
 		return model.ID == delivery.ID && model.DriverID != nil && *model.DriverID == driverID
 	})).Return(nil)
 
-	result, err := usecase.NewDeliveryUsecase(repository).AssignToDriver(ctx, input.AssignDeliveryToDriverInput{
+	result, err := usecase.NewDeliveryUsecase(repository, getTestLogger()).AssignToDriver(ctx, input.AssignDeliveryToDriverInput{
 		DeliveryID: delivery.ID.String(),
 		DriverID:   driverID.String(),
 	})
@@ -152,7 +161,7 @@ func TestDeliveryUsecase_AssignToDriver_RejectsAlreadyAssignedDelivery(t *testin
 	repository := new(MockDeliveryRepository)
 	repository.On("FindByID", ctx, delivery.ID).Return(delivery, nil)
 
-	result, err := usecase.NewDeliveryUsecase(repository).AssignToDriver(ctx, input.AssignDeliveryToDriverInput{
+	result, err := usecase.NewDeliveryUsecase(repository, getTestLogger()).AssignToDriver(ctx, input.AssignDeliveryToDriverInput{
 		DeliveryID: delivery.ID.String(),
 		DriverID:   uuid.New().String(),
 	})
@@ -169,7 +178,7 @@ func TestDeliveryUsecase_FindUnassociated(t *testing.T) {
 	repository := new(MockDeliveryRepository)
 	repository.On("FindUnassociatedDeliveries", ctx).Return([]entity.Delivery{*deliveryOne, *deliveryTwo}, nil)
 
-	result, err := usecase.NewDeliveryUsecase(repository).FindUnassociated(ctx)
+	result, err := usecase.NewDeliveryUsecase(repository, getTestLogger()).FindUnassociated(ctx)
 
 	require.NoError(t, err)
 	require.Len(t, result, 2)
@@ -185,7 +194,7 @@ func TestDeliveryUsecase_FindUnassociated_ReturnsRepositoryError(t *testing.T) {
 	repository := new(MockDeliveryRepository)
 	repository.On("FindUnassociatedDeliveries", ctx).Return(nil, expectedErr)
 
-	result, err := usecase.NewDeliveryUsecase(repository).FindUnassociated(ctx)
+	result, err := usecase.NewDeliveryUsecase(repository, getTestLogger()).FindUnassociated(ctx)
 
 	assert.ErrorIs(t, err, expectedErr)
 	assert.Nil(t, result)
@@ -200,7 +209,7 @@ func TestDeliveryUsecase_Create(t *testing.T) {
 		return model.ClientID == clientID && model.Weight == 10 && model.Status == "created"
 	})).Return(nil)
 
-	result, err := usecase.NewDeliveryUsecase(repository).Create(ctx, validCreateInput(clientID))
+	result, err := usecase.NewDeliveryUsecase(repository, getTestLogger()).Create(ctx, validCreateInput(clientID))
 
 	require.NoError(t, err)
 	require.NotNil(t, result)
@@ -218,7 +227,7 @@ func TestDeliveryUsecase_Create_RejectsInvalidInput(t *testing.T) {
 	dto := validCreateInput(uuid.New())
 	dto.Weight = 0
 
-	result, err := usecase.NewDeliveryUsecase(repository).Create(context.Background(), dto)
+	result, err := usecase.NewDeliveryUsecase(repository, getTestLogger()).Create(context.Background(), dto)
 
 	assert.EqualError(t, err, "weight is invalid")
 	assert.Nil(t, result)
