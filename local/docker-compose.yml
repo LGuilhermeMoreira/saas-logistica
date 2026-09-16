@@ -10,11 +10,13 @@ services:
       PORT: 8080
       LOG_MODE: prod
       AUTH_BASE_URL: "dns:///auth:50051"
+      DELIVERY_BASE_URL: "dns:///delivery:50051"
       OPA_ADDRESS: "http://gateway_opa:8181/v1/data/authz"
       JWT_SECRET: "your_jwt_secret"
       JWT_TTL: "8h"
     depends_on:
       - auth
+      - delivery
       - gateway_opa 
     networks:
       - app-network

@@ -6,6 +6,7 @@ import (
 	"gateway/config"
 	"gateway/internal/infra/service"
 	"gateway/internal/transport/api/auth"
+	deliveryapi "gateway/internal/transport/api/delivery"
 	"gateway/internal/transport/middleware"
 	"gateway/pkg/authentication"
 	"gateway/pkg/authorization"
@@ -19,6 +20,7 @@ import (
 	"time"
 
 	authv1 "proto/gen/auth/v1"
+	deliveryv1 "proto/gen/delivery/v1"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -46,6 +48,17 @@ func main() {
 	authService := service.NewAuthService(authClient)
 	authController := auth.NewAuthController(authService, logger)
 
+	deliveryConn, err := grpc.NewClient(cnfg.DELIVERY_BASE_URL, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		logger.Error("failed to connect to delivery service", "error", err)
+		panic(err)
+	}
+	defer deliveryConn.Close()
+
+	deliveryClient := deliveryv1.NewDeliveryServiceClient(deliveryConn)
+	deliveryService := service.NewDeliveryService(deliveryClient)
+	deliveryController := deliveryapi.NewDeliveryController(deliveryService, logger)
+
 	jwt := authentication.NewJWT(cnfg)
 	opa := authorization.NewOPA(cnfg)
 
@@ -72,6 +85,16 @@ func main() {
 		authGroup.GET("/find-role/:id", authController.FindRoleByID)
 		authGroup.GET("/find-user/:id", authController.FindUserByID)
 		authGroup.GET("/find-all-roles", authController.FindAllRoles)
+	}
+
+	deliveryGroup := mux.Group("/delivery")
+	deliveryGroup.Use(middleware.ValidateAuthentication(jwt, logger))
+	deliveryGroup.Use(middleware.ValidateAuthorization(opa, jwt, logger))
+	{
+		deliveryGroup.POST("/create", deliveryController.CreateDelivery)
+		deliveryGroup.GET("/find/:id", deliveryController.FindByID)
+		deliveryGroup.POST("/assign-driver", deliveryController.AssignToDriver)
+		deliveryGroup.GET("/find-unassociated", deliveryController.FindUnassociated)
 	}
 
 	server := &http.Server{
