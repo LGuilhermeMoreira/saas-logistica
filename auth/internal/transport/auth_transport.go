@@ -35,7 +35,7 @@ func (u *AuthTransport) Login(ctx context.Context, req *authv1.LoginRequest) (*a
 	login, err := u.uuc.Login(ctx, input.LoginInput{Email: req.Email, Password: req.Password})
 	if err != nil {
 		u.log.Error("login failed", slog.String("request_id", reqID), slog.String("email", req.Email), slog.Any("error", err))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	u.log.Info("login successful", slog.String("request_id", reqID), slog.String("email", req.Email))
@@ -56,7 +56,7 @@ func (u *AuthTransport) CreateUser(ctx context.Context, req *authv1.CreateUserRe
 	})
 	if err != nil {
 		u.log.Error("failed to create user", slog.String("request_id", reqID), slog.String("email", req.Email), slog.Any("error", err))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	u.log.Info("user created successfully", slog.String("request_id", reqID), slog.String("user_id", result.ID.String()))
@@ -75,7 +75,7 @@ func (u *AuthTransport) DeleteUser(ctx context.Context, req *authv1.DeleteUserRe
 	err := u.uuc.Delete(ctx, input.DeleteUserInput{ID: req.Id})
 	if err != nil {
 		u.log.Error("failed to delete user", slog.String("request_id", reqID), slog.String("user_id", req.Id), slog.Any("error", err))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	u.log.Info("user deleted successfully", slog.String("request_id", reqID), slog.String("user_id", req.Id))
@@ -99,7 +99,7 @@ func (u *AuthTransport) CreateRole(ctx context.Context, req *authv1.CreateRoleRe
 	result, err := u.ruc.Create(ctx, input.CreateRoleInput{Name: req.Name, Description: req.Description, Permissions: permissions})
 	if err != nil {
 		u.log.Error("failed to create role", slog.String("request_id", reqID), slog.String("role_name", req.Name), slog.Any("error", err))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	var desc string
@@ -131,7 +131,7 @@ func (u *AuthTransport) DeleteRole(ctx context.Context, req *authv1.DeleteRoleRe
 	err := u.ruc.Delete(ctx, input.DeleteRoleInput{ID: req.Id})
 	if err != nil {
 		u.log.Error("failed to delete role", slog.String("request_id", reqID), slog.String("role_id", req.Id), slog.Any("error", err))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	u.log.Info("role deleted successfully", slog.String("request_id", reqID), slog.String("role_id", req.Id))
@@ -147,7 +147,7 @@ func (u *AuthTransport) FindUserByID(ctx context.Context, req *authv1.FindUserBy
 	result, err := u.uuc.FindByID(ctx, input.FindByIDUserInput{ID: req.Id})
 	if err != nil {
 		u.log.Error("failed to find user", slog.String("request_id", reqID), slog.String("user_id", req.Id), slog.Any("error", err))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	return &authv1.FindUserByIDResponse{
@@ -165,7 +165,7 @@ func (u *AuthTransport) FindRoleByID(ctx context.Context, req *authv1.FindRoleBy
 	result, err := u.ruc.FindByID(ctx, input.FindByIDRoleInput{ID: req.Id})
 	if err != nil {
 		u.log.Error("failed to find role", slog.String("request_id", reqID), slog.String("role_id", req.Id), slog.Any("error", err))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	var desc string
@@ -196,7 +196,7 @@ func (u *AuthTransport) FindAllRoles(ctx context.Context, req *authv1.FindAllRol
 	result, err := u.ruc.FindAll(ctx)
 	if err != nil {
 		u.log.Error("failed to find all roles", slog.String("request_id", reqID), slog.Any("error", err))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	roles := make([]*authv1.Role, len(result))

@@ -12,13 +12,11 @@ type CreateDeliveryInput struct {
 	To       AddressInput   `json:"to"`
 	From     AddressInput   `json:"from"`
 	Weight   float32        `json:"weight"`
-	ClientID string         `json:"client_id"`
 	Metadata map[string]any `json:"metadata"`
 }
 
 type AssignToDriverInput struct {
 	DeliveryID string `json:"delivery_id"`
-	DriverID   string `json:"driver_id"`
 }
 
 type AddressOutput struct {

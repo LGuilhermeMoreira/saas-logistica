@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"gateway/internal/domain/contract"
+	"gateway/internal/transport/api/httperror"
 	deliveryv1 "proto/gen/delivery/v1"
 
 	"github.com/gin-gonic/gin"
@@ -38,12 +39,11 @@ func (c *DeliveryController) CreateDelivery(ctx *gin.Context) {
 		To:       addressToProto(input.To),
 		From:     addressToProto(input.From),
 		Weight:   input.Weight,
-		ClientId: input.ClientID,
 		Metadata: metadata,
 	})
 	if err != nil {
 		c.log.Error("delivery service create failed", slog.String("request_id", requestID), slog.Any("error", err))
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 
@@ -53,7 +53,7 @@ func (c *DeliveryController) CreateDelivery(ctx *gin.Context) {
 func (c *DeliveryController) FindByID(ctx *gin.Context) {
 	response, err := c.deliveryService.FindByID(ctx.Request.Context(), ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 	ctx.JSON(http.StatusOK, DeliveryResponse{Delivery: deliveryFromProto(response.GetDelivery())})
@@ -66,9 +66,9 @@ func (c *DeliveryController) AssignToDriver(ctx *gin.Context) {
 		return
 	}
 
-	response, err := c.deliveryService.AssignToDriver(ctx.Request.Context(), input.DeliveryID, input.DriverID)
+	response, err := c.deliveryService.AssignToDriver(ctx.Request.Context(), input.DeliveryID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 	ctx.JSON(http.StatusOK, DeliveryResponse{Delivery: deliveryFromProto(response.GetDelivery())})
@@ -77,7 +77,7 @@ func (c *DeliveryController) AssignToDriver(ctx *gin.Context) {
 func (c *DeliveryController) FindUnassociated(ctx *gin.Context) {
 	response, err := c.deliveryService.FindUnassociated(ctx.Request.Context())
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 

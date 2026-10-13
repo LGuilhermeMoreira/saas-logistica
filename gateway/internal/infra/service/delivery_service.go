@@ -23,10 +23,9 @@ func (s *DeliveryService) FindByID(ctx context.Context, id string) (*deliveryv1.
 	return s.deliveryClient.FindByID(ctx, &deliveryv1.FindByIDRequest{Id: id})
 }
 
-func (s *DeliveryService) AssignToDriver(ctx context.Context, deliveryID, driverID string) (*deliveryv1.AssignToDriverResponse, error) {
+func (s *DeliveryService) AssignToDriver(ctx context.Context, deliveryID string) (*deliveryv1.AssignToDriverResponse, error) {
 	return s.deliveryClient.AssignToDriver(ctx, &deliveryv1.AssignToDriverRequest{
 		DeliveryId: deliveryID,
-		DriverId:   driverID,
 	})
 }
 

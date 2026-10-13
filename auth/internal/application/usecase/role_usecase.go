@@ -8,6 +8,7 @@ import (
 	"auth/internal/application/output"
 	"auth/internal/domain/contract"
 	"auth/internal/domain/entity"
+	"auth/internal/domain/errs"
 	"auth/pkg/logger"
 
 	"github.com/google/uuid"
@@ -93,7 +94,7 @@ func (r *RoleUsecase) Delete(ctx context.Context, dto input.DeleteRoleInput) err
 	id, err := uuid.Parse(dto.ID)
 	if err != nil {
 		r.log.Error("invalid role id format", slog.String("request_id", reqID), slog.String("role_id", dto.ID), slog.Any("error", err))
-		return err
+		return errs.ErrInvalidRoleID
 	}
 
 	result, err := r.repository.FindByID(ctx, id)
@@ -119,7 +120,7 @@ func (r *RoleUsecase) FindByID(ctx context.Context, dto input.FindByIDRoleInput)
 	id, err := uuid.Parse(dto.ID)
 	if err != nil {
 		r.log.Error("invalid role id format", slog.String("request_id", reqID), slog.String("role_id", dto.ID), slog.Any("error", err))
-		return nil, err
+		return nil, errs.ErrInvalidRoleID
 	}
 
 	role, err := r.repository.FindByID(ctx, id)

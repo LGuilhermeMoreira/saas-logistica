@@ -1,0 +1,33 @@
+@baseUrl = http://localhost:8080
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImNyZWF0ZWRfYXQiOiIyMDI2LTA4LTMxVDE1OjI4OjM3Ljk0NjE3NFoiLCJkZWxldGVkX2F0IjpudWxsLCJlbWFpbCI6InVzZXJAdXNlci5jb20iLCJpZCI6IjAxYTA1ODZmLWQwMGItNzVlNy05MzFmLTQwZTQyZTY3NWJlZCIsIm5hbWUiOiJ1c2VyIiwicm9sZV9pZCI6IjAxYTA1ODZjLTYwNjktNzU3Mi04MTIzLTUxYzMzZjNiNWRlNSIsInJvbGVfbmFtZSI6IkRlbGl2ZXJ5IiwidXBkYXRlZF9hdCI6IjIwMjYtMDgtMzFUMTU6Mjg6MzcuOTQ2MTc0WiJ9LCJleHAiOjE3OTAzMDIyMTksImlhdCI6MTc5MDI3MzQxOX0.HNiM0imWvK870W0yHdSbGYPzQENMwiRexUbv5VMFMzU
+@requestId = test-create-delivery
+@clientId = 0192f8a0-7b1c-7e2d-9f30-123456789abc
+
+### Criar entrega
+POST {{baseUrl}}/delivery/create
+Authorization: Bearer {{token}}
+Content-Type: application/json
+X-Request-ID: {{requestId}}
+
+{
+  "to": {
+    "street": "Rua de Destino",
+    "number": "200",
+    "neighborhood": "Centro",
+    "city": "Sao Paulo",
+    "zip_code": "01000-000"
+  },
+  "from": {
+    "street": "Rua de Origem",
+    "number": "100",
+    "neighborhood": "Bela Vista",
+    "city": "Sao Paulo",
+    "zip_code": "01310-000"
+  },
+  "weight": 2.5,
+  "client_id": "{{clientId}}",
+  "metadata": {
+    "source": "http-test",
+    "priority": "normal"
+  }
+}

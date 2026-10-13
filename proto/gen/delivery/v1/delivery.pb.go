@@ -265,12 +265,12 @@ func (x *Delivery) GetStatus() DeliveryStatus {
 }
 
 // CreateDeliveryRequest message for creating a new delivery
+// The client is the authenticated user, taken from the access token.
 type CreateDeliveryRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	To            *Address               `protobuf:"bytes,1,opt,name=to,proto3" json:"to,omitempty"`
 	From          *Address               `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
 	Weight        float32                `protobuf:"fixed32,3,opt,name=weight,proto3" json:"weight,omitempty"`
-	ClientId      string                 `protobuf:"bytes,4,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
 	Metadata      *structpb.Struct       `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -327,13 +327,6 @@ func (x *CreateDeliveryRequest) GetWeight() float32 {
 	return 0
 }
 
-func (x *CreateDeliveryRequest) GetClientId() string {
-	if x != nil {
-		return x.ClientId
-	}
-	return ""
-}
-
 func (x *CreateDeliveryRequest) GetMetadata() *structpb.Struct {
 	if x != nil {
 		return x.Metadata
@@ -387,10 +380,10 @@ func (x *FindByIDRequest) GetId() string {
 }
 
 // AssignToDriverRequest message for assigning a delivery to a driver
+// The driver is the authenticated user, taken from the access token.
 type AssignToDriverRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	DeliveryId    string                 `protobuf:"bytes,1,opt,name=delivery_id,json=deliveryId,proto3" json:"delivery_id,omitempty"`
-	DriverId      string                 `protobuf:"bytes,2,opt,name=driver_id,json=driverId,proto3" json:"driver_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -428,13 +421,6 @@ func (*AssignToDriverRequest) Descriptor() ([]byte, []int) {
 func (x *AssignToDriverRequest) GetDeliveryId() string {
 	if x != nil {
 		return x.DeliveryId
-	}
-	return ""
-}
-
-func (x *AssignToDriverRequest) GetDriverId() string {
-	if x != nil {
-		return x.DriverId
 	}
 	return ""
 }
@@ -676,19 +662,17 @@ const file_delivery_v1_delivery_proto_rawDesc = "" +
 	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadata\x12\x1b\n" +
 	"\tclient_id\x18\x06 \x01(\tR\bclientId\x12\x1b\n" +
 	"\tdriver_id\x18\a \x01(\tR\bdriverId\x123\n" +
-	"\x06status\x18\b \x01(\x0e2\x1b.delivery.v1.DeliveryStatusR\x06status\"\xd1\x01\n" +
+	"\x06status\x18\b \x01(\x0e2\x1b.delivery.v1.DeliveryStatusR\x06status\"\xc5\x01\n" +
 	"\x15CreateDeliveryRequest\x12$\n" +
 	"\x02to\x18\x01 \x01(\v2\x14.delivery.v1.AddressR\x02to\x12(\n" +
 	"\x04from\x18\x02 \x01(\v2\x14.delivery.v1.AddressR\x04from\x12\x16\n" +
-	"\x06weight\x18\x03 \x01(\x02R\x06weight\x12\x1b\n" +
-	"\tclient_id\x18\x04 \x01(\tR\bclientId\x123\n" +
-	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"!\n" +
+	"\x06weight\x18\x03 \x01(\x02R\x06weight\x123\n" +
+	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadataJ\x04\b\x04\x10\x05R\tclient_id\"!\n" +
 	"\x0fFindByIDRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"U\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"I\n" +
 	"\x15AssignToDriverRequest\x12\x1f\n" +
 	"\vdelivery_id\x18\x01 \x01(\tR\n" +
-	"deliveryId\x12\x1b\n" +
-	"\tdriver_id\x18\x02 \x01(\tR\bdriverId\"K\n" +
+	"deliveryIdJ\x04\b\x02\x10\x03R\tdriver_id\"K\n" +
 	"\x16CreateDeliveryResponse\x121\n" +
 	"\bdelivery\x18\x01 \x01(\v2\x15.delivery.v1.DeliveryR\bdelivery\"E\n" +
 	"\x10FindByIDResponse\x121\n" +

@@ -14,6 +14,7 @@ import (
 	"auth/internal/application/input"
 	"auth/internal/application/usecase"
 	"auth/internal/domain/entity"
+	"auth/internal/domain/errs"
 )
 
 type MockUserRepository struct {
@@ -195,7 +196,7 @@ func TestUserUsecase_Delete(t *testing.T) {
 		dto := input.DeleteUserInput{ID: "invalid-uuid"}
 		err := uc.Delete(ctx, dto)
 
-		assert.Error(t, err)
+		assert.ErrorIs(t, err, errs.ErrInvalidUserID)
 		mockRepo.AssertNotCalled(t, "FindByID")
 		mockRepo.AssertNotCalled(t, "Delete")
 	})
@@ -266,7 +267,21 @@ func TestUserUsecase_Login(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Equal(t, "invalid credentials", err.Error())
+		assert.ErrorIs(t, err, errs.ErrInvalidCredentials)
+	})
+
+	t.Run("should return invalid credentials if email is unknown", func(t *testing.T) {
+		mockRepo := new(MockUserRepository)
+		uc := usecase.NewUserUsecase(mockRepo, nil, slog.Default())
+
+		dto := input.LoginInput{Email: validEmail, Password: validPassword}
+
+		mockRepo.On("Login", ctx, validEmail).Return(nil, errs.ErrUserNotFound)
+
+		result, err := uc.Login(ctx, dto)
+
+		assert.Nil(t, result)
+		assert.ErrorIs(t, err, errs.ErrInvalidCredentials)
 	})
 
 	t.Run("should return error if user not found on repository", func(t *testing.T) {
@@ -300,7 +315,7 @@ func TestUserUsecase_Login(t *testing.T) {
 
 		result, err := uc.Login(ctx, dto)
 
-		assert.Error(t, err) // Esperamos um erro do próprio pacote do bcrypt
+		assert.ErrorIs(t, err, errs.ErrInvalidCredentials)
 		assert.Nil(t, result)
 	})
 

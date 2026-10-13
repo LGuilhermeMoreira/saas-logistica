@@ -1,0 +1,9 @@
+@baseUrl = http://localhost:8080
+@token = COLE_AQUI_O_TOKEN_DO_LOGIN
+@deliveryId = COLE_AQUI_O_ID_RETORNADO_NA_CRIACAO
+@requestId = test-find-delivery
+
+### Buscar entrega por ID
+GET {{baseUrl}}/delivery/find/{{deliveryId}}
+Authorization: Bearer {{token}}
+X-Request-ID: {{requestId}}

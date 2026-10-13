@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -69,6 +70,13 @@ func (g *GRPCMiddleware) ValidateCredentials() grpc.UnaryServerInterceptor {
 			return nil, status.Error(codes.Unauthenticated, "missing role in token")
 		}
 
+		rawUserID, _ := data["id"].(string)
+		userID, err := uuid.Parse(rawUserID)
+		if err != nil || userID == uuid.Nil {
+			slog.Warn("missing or invalid user id in token", slog.String("request_id", reqID))
+			return nil, status.Error(codes.Unauthenticated, "missing user id in token")
+		}
+
 		httpPath := md.Get("http-path")
 		httpMethod := md.Get("http-method")
 		if len(httpPath) == 0 || len(httpMethod) == 0 {
@@ -92,6 +100,7 @@ func (g *GRPCMiddleware) ValidateCredentials() grpc.UnaryServerInterceptor {
 			return nil, status.Error(codes.PermissionDenied, "access denied by OPA")
 		}
 		ctx = context.WithValue(ctx, logger.RequestIDKey, reqID)
+		ctx = authentication.ContextWithUserID(ctx, userID)
 
 		return handler(ctx, req)
 	}

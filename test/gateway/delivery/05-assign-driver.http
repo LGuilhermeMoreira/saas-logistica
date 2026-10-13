@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:8080
+@token = COLE_AQUI_O_TOKEN_DO_LOGIN
+@deliveryId = COLE_AQUI_O_ID_DA_ENTREGA
+@driverId = 0192f8a0-7b1c-7e2d-9f30-abcdef123456
+@requestId = test-assign-driver
+
+### Associar motorista a entrega
+POST {{baseUrl}}/delivery/assign-driver
+Authorization: Bearer {{token}}
+Content-Type: application/json
+X-Request-ID: {{requestId}}
+
+{
+  "delivery_id": "{{deliveryId}}",
+  "driver_id": "{{driverId}}"
+}

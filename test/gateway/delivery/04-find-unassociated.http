@@ -1,0 +1,8 @@
+@baseUrl = http://localhost:8080
+@token = COLE_AQUI_O_TOKEN_DO_LOGIN
+@requestId = test-find-unassociated
+
+### Listar entregas sem motorista
+GET {{baseUrl}}/delivery/find-unassociated
+Authorization: Bearer {{token}}
+X-Request-ID: {{requestId}}

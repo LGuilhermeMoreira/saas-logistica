@@ -2,6 +2,7 @@ package repository_test
 
 import (
 	"auth/internal/domain/entity"
+	"auth/internal/domain/errs"
 	"auth/internal/infra/repository"
 	"log/slog"
 
@@ -67,7 +68,7 @@ func TestRoleRepository_FindByID(t *testing.T) {
 		randomID := uuid.New()
 		result, err := repo.FindByID(ctx, randomID)
 		assert.Error(t, err)
-		assert.Equal(t, gorm.ErrRecordNotFound, err)
+		assert.ErrorIs(t, err, errs.ErrRoleNotFound)
 		assert.Nil(t, result)
 	})
 }

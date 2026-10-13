@@ -2,10 +2,13 @@ package repository
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log/slog"
 
 	"auth/internal/domain/contract"
 	"auth/internal/domain/entity"
+	"auth/internal/domain/errs"
 	"auth/pkg/logger"
 
 	"github.com/google/uuid"
@@ -31,7 +34,10 @@ func (r *RoleRepository) Create(ctx context.Context, model *entity.Role) error {
 	err := r.db.WithContext(ctx).Create(model).Error
 	if err != nil {
 		r.log.Error("database error creating role", slog.String("request_id", reqID), slog.String("role_id", model.ID.String()), slog.Any("error", err))
-		return err
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return fmt.Errorf("failed to persist Role in database: %w", errs.ErrRoleAlreadyExists)
+		}
+		return fmt.Errorf("failed to persist Role in database: %w", err)
 	}
 
 	return nil
@@ -44,7 +50,10 @@ func (r *RoleRepository) Delete(ctx context.Context, model *entity.Role) error {
 	err := r.db.WithContext(ctx).Delete(model).Error
 	if err != nil {
 		r.log.Error("database error deleting role", slog.String("request_id", reqID), slog.String("role_id", model.ID.String()), slog.Any("error", err))
-		return err
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			return fmt.Errorf("failed to delete Role in database: %w", errs.ErrRoleInUse)
+		}
+		return fmt.Errorf("failed to delete Role in database: %w", err)
 	}
 
 	return nil
@@ -59,7 +68,10 @@ func (r *RoleRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Ro
 	err := r.db.WithContext(ctx).Preload("Permissions").Where("id = ?", id).First(&result).Error
 	if err != nil {
 		r.log.Error("database error finding role by id", slog.String("request_id", reqID), slog.String("role_id", id.String()), slog.Any("error", err))
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("failed to find Role by id: %w", errs.ErrRoleNotFound)
+		}
+		return nil, fmt.Errorf("failed to find Role by id: %w", err)
 	}
 
 	return &result, nil
@@ -74,7 +86,7 @@ func (r *RoleRepository) FindAll(ctx context.Context) ([]entity.Role, error) {
 	err := r.db.WithContext(ctx).Preload("Permissions").Find(&result).Error
 	if err != nil {
 		r.log.Error("database error finding all roles", slog.String("request_id", reqID), slog.Any("error", err))
-		return nil, err
+		return nil, fmt.Errorf("failed to find all Roles: %w", err)
 	}
 
 	return result, nil

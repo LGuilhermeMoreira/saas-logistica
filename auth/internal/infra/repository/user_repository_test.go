@@ -2,6 +2,7 @@ package repository_test
 
 import (
 	"auth/internal/domain/entity"
+	"auth/internal/domain/errs"
 	"auth/internal/infra/repository"
 	"context"
 	"log/slog"
@@ -102,6 +103,7 @@ func TestUserRepository_Login(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to find User by email")
+		assert.ErrorIs(t, err, errs.ErrUserNotFound)
 		assert.Nil(t, result)
 	})
 }
@@ -134,6 +136,7 @@ func TestUserRepository_FindByID(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to find User by id")
+		assert.ErrorIs(t, err, errs.ErrUserNotFound)
 		assert.Nil(t, result)
 	})
 }

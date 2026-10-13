@@ -7,6 +7,8 @@ import (
 	"delivery/internal/application/input"
 	"delivery/internal/application/output"
 	"delivery/internal/application/usecase"
+	"delivery/internal/domain/errs"
+	"delivery/pkg/authentication"
 	"delivery/pkg/authorization"
 	"delivery/pkg/logger"
 
@@ -35,7 +37,18 @@ func NewDeliveryTransport(
 }
 
 func (d *DeliveryTransport) CreateDelivery(ctx context.Context, req *deliveryv1.CreateDeliveryRequest) (*deliveryv1.CreateDeliveryResponse, error) {
-	d.log.Debug("CreateDelivery called", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("client_id", req.ClientId))
+	clientID, ok := authentication.UserIDFromContext(ctx)
+	if !ok {
+		d.log.Error("failed to create delivery", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", errs.ErrUnauthenticated.Error()))
+		return nil, toGRPCError(errs.ErrUnauthenticated)
+	}
+
+	d.log.Debug("CreateDelivery called", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("client_id", clientID.String()))
+
+	if req.GetTo() == nil || req.GetFrom() == nil {
+		d.log.Error("failed to create delivery", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", errs.ErrMissingAddress.Error()), slog.String("client_id", clientID.String()))
+		return nil, toGRPCError(errs.ErrMissingAddress)
+	}
 
 	dto := input.CreateDeliveryInput{
 		To: input.AddressInput{
@@ -53,17 +66,17 @@ func (d *DeliveryTransport) CreateDelivery(ctx context.Context, req *deliveryv1.
 			ZipCode:      req.From.ZipCode,
 		},
 		Weight:   req.Weight,
-		ClientID: req.ClientId,
+		ClientID: clientID.String(),
 		Metadata: req.Metadata.AsMap(),
 	}
 
 	result, err := d.usecase.Create(ctx, dto)
 	if err != nil {
-		d.log.Error("failed to create delivery", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("client_id", req.ClientId))
-		return nil, err
+		d.log.Error("failed to create delivery", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("client_id", clientID.String()))
+		return nil, toGRPCError(err)
 	}
 
-	d.log.Info("delivery created via gRPC", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("delivery_id", result.ID.String()), slog.String("client_id", req.ClientId))
+	d.log.Info("delivery created via gRPC", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("delivery_id", result.ID.String()), slog.String("client_id", clientID.String()))
 
 	return &deliveryv1.CreateDeliveryResponse{
 		Delivery: outputToProto(result),
@@ -80,7 +93,7 @@ func (d *DeliveryTransport) FindByID(ctx context.Context, req *deliveryv1.FindBy
 	result, err := d.usecase.FindByID(ctx, dto)
 	if err != nil {
 		d.log.Error("failed to find delivery", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("delivery_id", req.Id))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	d.log.Info("delivery found via gRPC", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("delivery_id", req.Id))
@@ -91,20 +104,26 @@ func (d *DeliveryTransport) FindByID(ctx context.Context, req *deliveryv1.FindBy
 }
 
 func (d *DeliveryTransport) AssignToDriver(ctx context.Context, req *deliveryv1.AssignToDriverRequest) (*deliveryv1.AssignToDriverResponse, error) {
-	d.log.Debug("AssignToDriver called", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("delivery_id", req.DeliveryId), slog.String("driver_id", req.DriverId))
+	driverID, ok := authentication.UserIDFromContext(ctx)
+	if !ok {
+		d.log.Error("failed to assign driver", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", errs.ErrUnauthenticated.Error()), slog.String("delivery_id", req.DeliveryId))
+		return nil, toGRPCError(errs.ErrUnauthenticated)
+	}
+
+	d.log.Debug("AssignToDriver called", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("delivery_id", req.DeliveryId), slog.String("driver_id", driverID.String()))
 
 	dto := input.AssignDeliveryToDriverInput{
 		DeliveryID: req.DeliveryId,
-		DriverID:   req.DriverId,
+		DriverID:   driverID.String(),
 	}
 
 	result, err := d.usecase.AssignToDriver(ctx, dto)
 	if err != nil {
-		d.log.Error("failed to assign driver", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("delivery_id", req.DeliveryId), slog.String("driver_id", req.DriverId))
-		return nil, err
+		d.log.Error("failed to assign driver", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("delivery_id", req.DeliveryId), slog.String("driver_id", driverID.String()))
+		return nil, toGRPCError(err)
 	}
 
-	d.log.Info("driver assigned via gRPC", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("delivery_id", req.DeliveryId), slog.String("driver_id", req.DriverId))
+	d.log.Info("driver assigned via gRPC", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("delivery_id", req.DeliveryId), slog.String("driver_id", driverID.String()))
 
 	return &deliveryv1.AssignToDriverResponse{
 		Delivery: outputToProto(result),
@@ -117,7 +136,7 @@ func (d *DeliveryTransport) FindUnassociated(ctx context.Context, req *deliveryv
 	results, err := d.usecase.FindUnassociated(ctx)
 	if err != nil {
 		d.log.Error("failed to find unassociated deliveries", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	deliveries := make([]*deliveryv1.Delivery, len(results))
@@ -147,6 +166,11 @@ func outputToProto(output *output.DeliveryOutput) *deliveryv1.Delivery {
 		status = deliveryv1.DeliveryStatus_DELIVERY_STATUS_CANCELLED
 	}
 
+	var driverID string
+	if output.DriverID != nil {
+		driverID = output.DriverID.String()
+	}
+
 	return &deliveryv1.Delivery{
 		Id: output.ID.String(),
 		To: &deliveryv1.Address{
@@ -168,7 +192,7 @@ func outputToProto(output *output.DeliveryOutput) *deliveryv1.Delivery {
 		Weight:   output.Weight,
 		Metadata: metadata.GetStructValue(),
 		ClientId: output.ClientID.String(),
-		DriverId: output.DriverID.String(),
+		DriverId: driverID,
 		Status:   status,
 	}
 }

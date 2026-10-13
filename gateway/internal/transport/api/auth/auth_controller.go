@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"gateway/internal/domain/contract"
+	"gateway/internal/transport/api/httperror"
 	authv1 "proto/gen/auth/v1"
 
 	"github.com/gin-gonic/gin"
@@ -36,7 +37,7 @@ func (c *AuthController) Login(ctx *gin.Context) {
 	token, err := c.authService.Login(ctx.Request.Context(), input.Email, input.Password)
 	if err != nil {
 		c.log.Error("auth service login failed", slog.String("request_id", reqID), slog.String("email", input.Email), slog.Any("error", err))
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 
@@ -58,7 +59,7 @@ func (c *AuthController) CreateUser(ctx *gin.Context) {
 	resp, err := c.authService.CreateUser(ctx.Request.Context(), input.Name, input.Email, input.Password, input.RoleID)
 	if err != nil {
 		c.log.Error("auth service create user failed", slog.String("request_id", reqID), slog.String("email", input.Email), slog.Any("error", err))
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 
@@ -78,7 +79,7 @@ func (c *AuthController) DeleteUser(ctx *gin.Context) {
 	resp, err := c.authService.DeleteUser(ctx.Request.Context(), id)
 	if err != nil {
 		c.log.Error("auth service delete user failed", slog.String("request_id", reqID), slog.String("user_id", id), slog.Any("error", err))
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 
@@ -108,7 +109,7 @@ func (c *AuthController) CreateRole(ctx *gin.Context) {
 	resp, err := c.authService.CreateRole(ctx.Request.Context(), input.Name, input.Description, permissions)
 	if err != nil {
 		c.log.Error("auth service create role failed", slog.String("request_id", reqID), slog.String("role_name", input.Name), slog.Any("error", err))
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 
@@ -137,7 +138,7 @@ func (c *AuthController) DeleteRole(ctx *gin.Context) {
 	resp, err := c.authService.DeleteRole(ctx.Request.Context(), id)
 	if err != nil {
 		c.log.Error("auth service delete role failed", slog.String("request_id", reqID), slog.String("role_id", id), slog.Any("error", err))
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 
@@ -153,7 +154,7 @@ func (c *AuthController) FindUserByID(ctx *gin.Context) {
 	resp, err := c.authService.FindUserByID(ctx.Request.Context(), id)
 	if err != nil {
 		c.log.Error("auth service find user by id failed", slog.String("request_id", reqID), slog.String("user_id", id), slog.Any("error", err))
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 
@@ -173,7 +174,7 @@ func (c *AuthController) FindRoleByID(ctx *gin.Context) {
 	resp, err := c.authService.FindRoleByID(ctx.Request.Context(), id)
 	if err != nil {
 		c.log.Error("auth service find role by id failed", slog.String("request_id", reqID), slog.String("role_id", id), slog.Any("error", err))
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 
@@ -200,7 +201,7 @@ func (c *AuthController) FindAllRoles(ctx *gin.Context) {
 	resp, err := c.authService.FindAllRoles(ctx.Request.Context())
 	if err != nil {
 		c.log.Error("auth service find all roles failed", slog.String("request_id", reqID), slog.Any("error", err))
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		httperror.Respond(ctx, err)
 		return
 	}
 

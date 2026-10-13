@@ -38,11 +38,14 @@ message Delivery {
 }
 
 // CreateDeliveryRequest message for creating a new delivery
+// The client is the authenticated user, taken from the access token.
 message CreateDeliveryRequest {
+  reserved 4;
+  reserved "client_id";
+
   Address to = 1;
   Address from = 2;
   float weight = 3;
-  string client_id = 4;
   google.protobuf.Struct metadata = 5;
 }
 
@@ -52,9 +55,12 @@ message FindByIDRequest {
 }
 
 // AssignToDriverRequest message for assigning a delivery to a driver
+// The driver is the authenticated user, taken from the access token.
 message AssignToDriverRequest {
+  reserved 2;
+  reserved "driver_id";
+
   string delivery_id = 1;
-  string driver_id = 2;
 }
 
 // CreateDeliveryResponse message for create delivery response
