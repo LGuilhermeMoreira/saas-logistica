@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"errors"
+	"auth/internal/domain/errs"
 	"fmt"
 	"strings"
 
@@ -47,7 +47,7 @@ func NewRole(name, description string, perm []Permission) (*Role, error) {
 	var realDescription *string
 
 	if name == "" {
-		return nil, errors.New("name is invalid")
+		return nil, errs.ErrInvalidRoleName
 	}
 
 	if description != "" {
@@ -60,7 +60,7 @@ func NewRole(name, description string, perm []Permission) (*Role, error) {
 	}
 
 	if len(perm) == 0 {
-		return nil, errors.New("role must have one permission")
+		return nil, errs.ErrRoleWithoutPermission
 	}
 
 	for i := 0; i < len(perm); i++ {

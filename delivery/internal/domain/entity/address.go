@@ -1,7 +1,8 @@
 package entity
 
 import (
-	"errors"
+	"delivery/internal/domain/errs"
+	"fmt"
 	"strings"
 
 	"github.com/google/uuid"
@@ -18,28 +19,28 @@ type Address struct {
 
 func NewAddress(street, number, neighborhood, city, zipCode string) (*Address, error) {
 	if strings.TrimSpace(street) == "" {
-		return nil, errors.New("street is invalid")
+		return nil, errs.ErrInvalidStreet
 	}
 
 	if strings.TrimSpace(number) == "" {
-		return nil, errors.New("number is invalid")
+		return nil, errs.ErrInvalidNumber
 	}
 
 	if strings.TrimSpace(neighborhood) == "" {
-		return nil, errors.New("neighborhood is invalid")
+		return nil, errs.ErrInvalidNeighborhood
 	}
 
 	if strings.TrimSpace(city) == "" {
-		return nil, errors.New("city is invalid")
+		return nil, errs.ErrInvalidCity
 	}
 
 	if strings.TrimSpace(zipCode) == "" {
-		return nil, errors.New("zip code is invalid")
+		return nil, errs.ErrInvalidZipCode
 	}
 
 	id, err := uuid.NewV7()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to generate address id: %w", err)
 	}
 
 	return &Address{

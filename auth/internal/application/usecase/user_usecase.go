@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"strings"
 
@@ -10,6 +11,7 @@ import (
 	"auth/internal/application/output"
 	"auth/internal/domain/contract"
 	"auth/internal/domain/entity"
+	"auth/internal/domain/errs"
 	"auth/pkg/authentication"
 	"auth/pkg/logger"
 
@@ -67,7 +69,7 @@ func (c *UserUsecase) Delete(ctx context.Context, dto input.DeleteUserInput) err
 	ID, err := uuid.Parse(dto.ID)
 	if err != nil {
 		c.log.Error("invalid user id format", slog.String("request_id", reqID), slog.String("user_id", dto.ID), slog.Any("error", err))
-		return err
+		return errs.ErrInvalidUserID
 	}
 
 	result, err := c.repository.FindByID(ctx, ID)
@@ -91,21 +93,28 @@ func (c *UserUsecase) Login(ctx context.Context, dto input.LoginInput) (*output.
 	c.log.Info("starting user login process", slog.String("request_id", reqID), slog.String("email", dto.Email))
 
 	if strings.TrimSpace(dto.Email) == "" || strings.TrimSpace(dto.Password) == "" {
-		err := errors.New("invalid credentials")
 		c.log.Warn("empty credentials provided", slog.String("request_id", reqID), slog.String("email", dto.Email))
-		return nil, err
+		return nil, errs.ErrInvalidCredentials
 	}
 
 	result, err := c.repository.Login(ctx, dto.Email)
 	if err != nil {
+		if errors.Is(err, errs.ErrUserNotFound) {
+			c.log.Warn("login attempt with unknown email", slog.String("request_id", reqID), slog.String("email", dto.Email))
+			return nil, errs.ErrInvalidCredentials
+		}
 		c.log.Error("failed to fetch user for login", slog.String("request_id", reqID), slog.String("email", dto.Email), slog.Any("error", err))
 		return nil, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(dto.Password))
-	if err != nil {
+	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 		c.log.Warn("invalid password attempt", slog.String("request_id", reqID), slog.String("email", dto.Email))
-		return nil, err
+		return nil, errs.ErrInvalidCredentials
+	}
+	if err != nil {
+		c.log.Error("failed to compare password hash", slog.String("request_id", reqID), slog.String("email", dto.Email), slog.Any("error", err))
+		return nil, fmt.Errorf("failed to compare password hash: %w", err)
 	}
 
 	token, err := c.jwt.GenerateToken(result.ToMap())
@@ -128,7 +137,7 @@ func (c *UserUsecase) FindByID(ctx context.Context, dto input.FindByIDUserInput)
 	id, err := uuid.Parse(dto.ID)
 	if err != nil {
 		c.log.Error("invalid user id format", slog.String("request_id", reqID), slog.String("user_id", dto.ID), slog.Any("error", err))
-		return nil, err
+		return nil, errs.ErrInvalidUserID
 	}
 
 	model, err := c.repository.FindByID(ctx, id)

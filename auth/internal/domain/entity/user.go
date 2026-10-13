@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"errors"
+	"auth/internal/domain/errs"
 	"fmt"
 	"net/mail"
 	"strings"
@@ -27,32 +27,32 @@ func NewUser(name, email, password, roleID string) (*User, error) {
 	password = strings.TrimSpace(password)
 
 	if name == "" {
-		return nil, errors.New("client must have a name")
+		return nil, errs.ErrInvalidUserName
 	}
 
 	_, mailErr := mail.ParseAddress(email)
 
 	if email == "" || mailErr != nil {
-		return nil, errors.New("email is invalid")
+		return nil, errs.ErrInvalidEmail
 	}
 
 	if password == "" || len(password) < 6 {
-		return nil, errors.New("password does not meet the security requirements")
+		return nil, errs.ErrWeakPassword
 	}
 
 	realRoleId, err := uuid.Parse(roleID)
-	if err != nil {
-		return nil, err
+	if err != nil || realRoleId == uuid.Nil {
+		return nil, errs.ErrInvalidRoleID
 	}
 
 	id, err := uuid.NewV7()
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate role id: %w", err)
+		return nil, fmt.Errorf("failed to generate user id: %w", err)
 	}
 
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
 	return &User{

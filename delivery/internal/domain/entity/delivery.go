@@ -1,7 +1,8 @@
 package entity
 
 import (
-	"errors"
+	"delivery/internal/domain/errs"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -28,16 +29,16 @@ type Delivery struct {
 
 func NewDelivery(to, from Address, weight float32, clientID uuid.UUID, metadata map[string]any) (*Delivery, error) {
 	if weight <= 0 {
-		return nil, errors.New("weight is invalid")
+		return nil, errs.ErrInvalidWeight
 	}
 
 	if clientID == uuid.Nil {
-		return nil, errors.New("client id is invalid")
+		return nil, errs.ErrInvalidClientID
 	}
 
 	id, err := uuid.NewV7()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to generate delivery id: %w", err)
 	}
 
 	return &Delivery{
@@ -54,10 +55,10 @@ func NewDelivery(to, from Address, weight float32, clientID uuid.UUID, metadata 
 
 func (d *Delivery) AssingDriver(id uuid.UUID) error {
 	if id == uuid.Nil {
-		return errors.New("driver id is invalid")
+		return errs.ErrInvalidDriverID
 	}
 	if d.DriverID != nil {
-		return errors.New("delivery already assigned by driver")
+		return errs.ErrDeliveryAlreadyAssigned
 	}
 	d.DriverID = &id
 	d.Status = DeliveryStatusInTransit

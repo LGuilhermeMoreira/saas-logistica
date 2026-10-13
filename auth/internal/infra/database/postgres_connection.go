@@ -11,7 +11,7 @@ import (
 
 func NewPostgresConnection(dsn string) (*gorm.DB, error) {
 	for i := 0; i < 5; i++ {
-		conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{TranslateError: true})
 
 		if err == nil {
 			sqlDB, err := conn.DB()

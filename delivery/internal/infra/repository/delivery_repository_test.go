@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"delivery/internal/domain/entity"
+	"delivery/internal/domain/errs"
 	"delivery/internal/infra/repository"
 
 	"github.com/google/uuid"
@@ -147,7 +148,7 @@ func TestDeliveryRepository_FindByID(t *testing.T) {
 
 		require.Error(t, err)
 		assert.Nil(t, result)
-		assert.EqualError(t, err, "delivery not found")
+		assert.ErrorIs(t, err, errs.ErrDeliveryNotFound)
 	})
 }
 
@@ -256,7 +257,7 @@ func TestDeliveryRepository_AssingToDriver(t *testing.T) {
 		assert.ErrorIs(
 			t,
 			err,
-			repository.ErrConcurrencyConflict,
+			errs.ErrConcurrencyConflict,
 		)
 	})
 
@@ -282,7 +283,7 @@ func TestDeliveryRepository_AssingToDriver(t *testing.T) {
 		assert.ErrorIs(
 			t,
 			err,
-			repository.ErrConcurrencyConflict,
+			errs.ErrConcurrencyConflict,
 		)
 	})
 
@@ -307,7 +308,7 @@ func TestDeliveryRepository_AssingToDriver(t *testing.T) {
 		assert.ErrorIs(
 			t,
 			err,
-			repository.ErrConcurrencyConflict,
+			errs.ErrConcurrencyConflict,
 		)
 	})
 }

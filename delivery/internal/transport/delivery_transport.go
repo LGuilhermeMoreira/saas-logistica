@@ -60,7 +60,7 @@ func (d *DeliveryTransport) CreateDelivery(ctx context.Context, req *deliveryv1.
 	result, err := d.usecase.Create(ctx, dto)
 	if err != nil {
 		d.log.Error("failed to create delivery", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("client_id", req.ClientId))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	d.log.Info("delivery created via gRPC", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("delivery_id", result.ID.String()), slog.String("client_id", req.ClientId))
@@ -80,7 +80,7 @@ func (d *DeliveryTransport) FindByID(ctx context.Context, req *deliveryv1.FindBy
 	result, err := d.usecase.FindByID(ctx, dto)
 	if err != nil {
 		d.log.Error("failed to find delivery", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("delivery_id", req.Id))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	d.log.Info("delivery found via gRPC", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("delivery_id", req.Id))
@@ -101,7 +101,7 @@ func (d *DeliveryTransport) AssignToDriver(ctx context.Context, req *deliveryv1.
 	result, err := d.usecase.AssignToDriver(ctx, dto)
 	if err != nil {
 		d.log.Error("failed to assign driver", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("delivery_id", req.DeliveryId), slog.String("driver_id", req.DriverId))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	d.log.Info("driver assigned via gRPC", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("delivery_id", req.DeliveryId), slog.String("driver_id", req.DriverId))
@@ -117,7 +117,7 @@ func (d *DeliveryTransport) FindUnassociated(ctx context.Context, req *deliveryv
 	results, err := d.usecase.FindUnassociated(ctx)
 	if err != nil {
 		d.log.Error("failed to find unassociated deliveries", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()))
-		return nil, err
+		return nil, toGRPCError(err)
 	}
 
 	deliveries := make([]*deliveryv1.Delivery, len(results))

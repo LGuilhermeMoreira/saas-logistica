@@ -2,11 +2,13 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 
 	"auth/internal/domain/contract"
 	"auth/internal/domain/entity"
+	"auth/internal/domain/errs"
 	"auth/pkg/logger"
 
 	"github.com/google/uuid"
@@ -32,6 +34,12 @@ func (c *UserRepository) Create(ctx context.Context, model *entity.User) error {
 	err := c.db.WithContext(ctx).Create(model).Error
 	if err != nil {
 		c.log.Error("database error creating user", slog.String("request_id", reqID), slog.String("user_id", model.ID.String()), slog.Any("error", err))
+		switch {
+		case errors.Is(err, gorm.ErrDuplicatedKey):
+			return fmt.Errorf("failed to persist User in database: %w", errs.ErrUserAlreadyExists)
+		case errors.Is(err, gorm.ErrForeignKeyViolated):
+			return fmt.Errorf("failed to persist User in database: %w", errs.ErrRoleNotFound)
+		}
 		return fmt.Errorf("failed to persist User in database: %w", err)
 	}
 	return nil
@@ -58,6 +66,9 @@ func (c *UserRepository) Login(ctx context.Context, email string) (*entity.User,
 	err := c.db.WithContext(ctx).Preload("Role", nil).Where("email = ?", email).First(&User).Error
 	if err != nil {
 		c.log.Error("database error finding user by email", slog.String("request_id", reqID), slog.String("email", email), slog.Any("error", err))
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("failed to find User by email: %w", errs.ErrUserNotFound)
+		}
 		return nil, fmt.Errorf("failed to find User by email: %w", err)
 	}
 
@@ -73,6 +84,9 @@ func (c *UserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Us
 	err := c.db.WithContext(ctx).Where("id = ?", id).First(&result).Error
 	if err != nil {
 		c.log.Error("database error finding user by id", slog.String("request_id", reqID), slog.String("user_id", id.String()), slog.Any("error", err))
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("failed to find User by id: %w", errs.ErrUserNotFound)
+		}
 		return nil, fmt.Errorf("failed to find User by id: %w", err)
 	}
 

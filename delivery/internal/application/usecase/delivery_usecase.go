@@ -8,6 +8,7 @@ import (
 	"delivery/internal/application/output"
 	"delivery/internal/domain/contract"
 	"delivery/internal/domain/entity"
+	"delivery/internal/domain/errs"
 	"delivery/pkg/logger"
 
 	"github.com/google/uuid"
@@ -35,7 +36,7 @@ func (d *DeliveryUsecase) FindByID(ctx context.Context, dto input.FindByIDDelive
 	id, err := uuid.Parse(dto.ID)
 	if err != nil {
 		d.log.Error("invalid delivery ID format", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("delivery_id", dto.ID))
-		return nil, err
+		return nil, errs.ErrInvalidDeliveryID
 	}
 
 	model, err := d.repo.FindByID(ctx, id)
@@ -55,13 +56,13 @@ func (d *DeliveryUsecase) AssignToDriver(ctx context.Context, dto input.AssignDe
 	deliveryID, err := uuid.Parse(dto.DeliveryID)
 	if err != nil {
 		d.log.Error("invalid delivery ID format", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("delivery_id", dto.DeliveryID))
-		return nil, err
+		return nil, errs.ErrInvalidDeliveryID
 	}
 
 	driverID, err := uuid.Parse(dto.DriverID)
 	if err != nil {
 		d.log.Error("invalid driver ID format", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("driver_id", dto.DriverID))
-		return nil, err
+		return nil, errs.ErrInvalidDriverID
 	}
 
 	model, err := d.repo.FindByID(ctx, deliveryID)
@@ -121,7 +122,7 @@ func (d *DeliveryUsecase) Create(ctx context.Context, dto input.CreateDeliveryIn
 	clientID, err := uuid.Parse(dto.ClientID)
 	if err != nil {
 		d.log.Error("invalid client ID format", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", err.Error()), slog.String("client_id", dto.ClientID))
-		return nil, err
+		return nil, errs.ErrInvalidClientID
 	}
 
 	model, err := entity.NewDelivery(*to, *from, dto.Weight, clientID, dto.Metadata)
