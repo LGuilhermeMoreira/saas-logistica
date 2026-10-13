@@ -13,6 +13,7 @@ var (
 	ErrInvalidClientID     = errors.New("client id is invalid")
 	ErrInvalidDriverID     = errors.New("driver id is invalid")
 	ErrInvalidDeliveryID   = errors.New("delivery id is invalid")
+	ErrMissingAddress      = errors.New("origin and destination addresses are required")
 )
 
 // Not found errors

@@ -7,6 +7,7 @@ import (
 	"delivery/internal/application/input"
 	"delivery/internal/application/output"
 	"delivery/internal/application/usecase"
+	"delivery/internal/domain/errs"
 	"delivery/pkg/authorization"
 	"delivery/pkg/logger"
 
@@ -36,6 +37,11 @@ func NewDeliveryTransport(
 
 func (d *DeliveryTransport) CreateDelivery(ctx context.Context, req *deliveryv1.CreateDeliveryRequest) (*deliveryv1.CreateDeliveryResponse, error) {
 	d.log.Debug("CreateDelivery called", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("client_id", req.ClientId))
+
+	if req.GetTo() == nil || req.GetFrom() == nil {
+		d.log.Error("failed to create delivery", slog.String("request-id", logger.ExtractRequestID(ctx)), slog.String("error", errs.ErrMissingAddress.Error()), slog.String("client_id", req.ClientId))
+		return nil, toGRPCError(errs.ErrMissingAddress)
+	}
 
 	dto := input.CreateDeliveryInput{
 		To: input.AddressInput{

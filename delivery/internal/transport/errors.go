@@ -23,6 +23,7 @@ var errorCodes = []struct {
 	{errs.ErrInvalidClientID, codes.InvalidArgument},
 	{errs.ErrInvalidDriverID, codes.InvalidArgument},
 	{errs.ErrInvalidDeliveryID, codes.InvalidArgument},
+	{errs.ErrMissingAddress, codes.InvalidArgument},
 
 	{errs.ErrDeliveryNotFound, codes.NotFound},
 
